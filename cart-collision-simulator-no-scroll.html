@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cart & Box Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f0f4ff;
+    --white: #fff;
+    --blue: #3b82f6;
+    --blue-light: #dbeafe;
+    --blue-dark: #1d4ed8;
+    --orange: #f97316;
+    --orange-light: #ffedd5;
+    --green: #22c55e;
+    --green-light: #dcfce7;
+    --yellow: #eab308;
+    --yellow-light: #fef9c3;
+    --gray: #64748b;
+    --gray-light: #f1f5f9;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --text-soft: #475569;
+    --shadow: 0 2px 14px rgba(0,0,0,0.09);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Nunito',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+  .page { max-width:860px; margin:0 auto; padding:24px 16px 48px; }
+
+  header { text-align:center; margin-bottom:22px; }
+  header h1 { font-size:30px; font-weight:900; color:var(--blue-dark); }
+  header p  { font-size:15px; color:var(--text-soft); margin-top:4px; }
+
+  .card {
+    background:var(--white); border-radius:20px;
+    box-shadow:var(--shadow); padding:20px; margin-bottom:16px;
+  }
+  .card-title {
+    font-size:12px; font-weight:800; text-transform:uppercase;
+    letter-spacing:1.2px; color:var(--gray); margin-bottom:14px;
+  }
+
+  /* TRACK */
+  #track-canvas {
+    width:100%; height:210px;
+    border-radius:14px; border:2px solid var(--border);
+    display:block; cursor:pointer; background:#f0f7ff;
+  }
+  .track-hint { text-align:center; font-size:12px; color:var(--gray); margin-top:6px; }
+
+  /* live chips */
+  .live-row { display:flex; gap:10px; margin-top:10px; }
+  .live-chip { flex:1; border-radius:12px; padding:10px 14px; text-align:center; }
+  .live-chip.blue  { background:var(--blue-light); }
+  .live-chip.amber { background:var(--orange-light); }
+  .live-chip .lc-val   { font-size:18px; font-weight:900; display:block; }
+  .live-chip.blue  .lc-val { color:var(--blue-dark); }
+  .live-chip.amber .lc-val { color:#c2410c; }
+  .live-chip .lc-label { font-size:11px; font-weight:600; color:var(--text-soft); }
+
+  /* SETUP */
+  .setup-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .setup-box { border-radius:16px; padding:16px; }
+  .setup-box.cart-box { background:var(--blue-light); border:2px solid var(--blue); }
+  .setup-box h3 { font-size:16px; font-weight:800; margin-bottom:14px; }
+  .cart-box h3 { color:var(--blue-dark); }
+
+  .ctrl-row { margin-bottom:14px; }
+  .ctrl-label { display:flex; justify-content:space-between; align-items:center; font-size:14px; font-weight:700; margin-bottom:6px; }
+  .val-badge { font-size:13px; font-weight:800; padding:2px 10px; border-radius:20px; min-width:50px; text-align:center; }
+  .cart-box .val-badge { background:var(--blue); color:white; }
+
+  input[type="range"] { width:100%; height:6px; -webkit-appearance:none; border-radius:6px; outline:none; cursor:pointer; }
+  .cart-box input[type="range"] { background:#93c5fd; }
+  .cart-box input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance:none; width:20px; height:20px; border-radius:50%;
+    background:var(--blue); border:3px solid white; box-shadow:0 2px 6px rgba(59,130,246,.5); cursor:pointer;
+  }
+
+  /* BUTTONS */
+  .action-row { display:flex; gap:12px; justify-content:center; }
+  .btn-launch {
+    padding:14px 44px; border-radius:14px; border:none;
+    background:var(--blue); color:white;
+    font-family:'Nunito',sans-serif; font-size:20px; font-weight:900;
+    cursor:pointer; box-shadow:0 4px 14px rgba(59,130,246,.4); transition:all .15s;
+  }
+  .btn-launch:hover { background:var(--blue-dark); transform:translateY(-1px); }
+  .btn-reset {
+    padding:14px 24px; border-radius:14px; border:2px solid var(--border);
+    background:white; color:var(--text);
+    font-family:'Nunito',sans-serif; font-size:20px; font-weight:800; cursor:pointer; transition:all .15s;
+  }
+  .btn-reset:hover { border-color:var(--blue); color:var(--blue); }
+
+  /* RESULTS */
+  #results-card { display:none; animation:popIn .4s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes popIn { from{opacity:0;transform:scale(.92)} to{opacity:1;transform:scale(1)} }
+
+  .results-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px; }
+  .result-box { border-radius:14px; padding:14px; text-align:center; }
+  .result-box.blue-r   { background:var(--blue-light); }
+  .result-box.orange-r { background:var(--orange-light); }
+  .result-box .rb-label  { font-size:12px; font-weight:700; color:var(--text-soft); text-transform:uppercase; letter-spacing:.5px; }
+  .result-box .rb-before { font-size:13px; color:var(--text-soft); margin:5px 0 2px; }
+  .result-box .rb-arrow  { font-size:16px; margin:2px 0; color:var(--text-soft); }
+  .result-box .rb-after  { font-size:22px; font-weight:900; }
+  .blue-r   .rb-after { color:var(--blue-dark); }
+  .orange-r .rb-after { color:#c2410c; }
+
+  /* Distance highlight box */
+  .distance-highlight {
+    background: #fff7ed; border: 2px solid var(--orange);
+    border-radius:14px; padding:14px 18px; margin-bottom:12px;
+    display:flex; align-items:center; gap:16px;
+  }
+  .distance-highlight .dh-num {
+    font-size:36px; font-weight:900; color:#c2410c; white-space:nowrap;
+  }
+  .distance-highlight .dh-text { flex:1; }
+  .distance-highlight .dh-title { font-size:14px; font-weight:800; color:#c2410c; margin-bottom:2px; }
+  .distance-highlight .dh-sub   { font-size:12px; color:var(--text-soft); }
+
+  /* flash */
+  #flash-overlay {
+    position:fixed; inset:0;
+    background:radial-gradient(circle at center,rgba(255,220,50,.5),transparent 60%);
+    pointer-events:none; opacity:0; transition:opacity .08s; z-index:100;
+  }
+  #flash-overlay.active { opacity:1; }
+
+  @media(max-width:560px){
+    .setup-grid,.results-grid { grid-template-columns:1fr; }
+    header h1 { font-size:24px; }
+    .distance-highlight .dh-num { font-size:28px; }
+  }
+</style>
+</head>
+<body>
+<div id="flash-overlay"></div>
+<div class="page">
+
+  <header>
+    <h1>Cart & Box Lab</h1>
+    <p>The cart rolls and crashes into the box — watch what happens!</p>
+  </header>
+
+  <!-- TRACK -->
+  <div class="card">
+    <div class="card-title">Track</div>
+    <canvas id="track-canvas"></canvas>
+    <div class="live-row">
+      <div class="live-chip blue">
+        <span class="lc-val" id="live-cart">10</span>
+        <span class="lc-label">Cart speed</span>
+      </div>
+      <div class="live-chip amber">
+        <span class="lc-val" id="live-box">not moving</span>
+        <span class="lc-label">Box speed</span>
+      </div>
+    </div>
+    <p class="track-hint">Click the track to pause / resume</p>
+  </div>
+
+  <!-- SETUP -->
+  <div class="card">
+    <div class="card-title">Set Up the Experiment</div>
+    <div class="setup-grid">
+
+      <!-- CART -->
+      <div class="setup-box cart-box">
+        <h3>Rolling Cart</h3>
+
+        <div class="ctrl-row">
+          <div class="ctrl-label">
+            Cart weight
+            <span class="val-badge" id="mc-badge">10 g</span>
+          </div>
+          <input type="range" id="mc" min="1" max="40" step="1" value="10">
+        </div>
+
+        <div class="ctrl-row">
+          <div class="ctrl-label">
+            Starting speed
+            <span class="val-badge" id="vc-badge">10</span>
+          </div>
+          <input type="range" id="vc" min="1" max="40" step="1" value="10">
+        </div>
+
+        <p style="font-size:12px;color:var(--text-soft);margin-top:2px">Always rolls right toward the box.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- LAUNCH -->
+  <div class="card">
+    <div class="action-row">
+      <button class="btn-launch" id="btn-launch">Launch Cart</button>
+      <button class="btn-reset"  id="btn-reset">Reset</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="card" id="results-card">
+    <div class="card-title">What happened in the crash?</div>
+
+    <div class="results-grid">
+      <div class="result-box blue-r">
+        <div class="rb-label">Cart</div>
+        <div class="rb-before" id="rb-before-cart">Before: —</div>
+        <div class="rb-arrow">↓</div>
+        <div class="rb-after" id="rb-after-cart">—</div>
+      </div>
+      <div class="result-box orange-r">
+        <div class="rb-label">Box</div>
+        <div class="rb-before">Before: 0 (not moving)</div>
+        <div class="rb-arrow">↓</div>
+        <div class="rb-after" id="rb-after-box">—</div>
+      </div>
+    </div>
+
+    <!-- Box distance highlight -->
+    <div class="distance-highlight">
+      <div class="dh-num" id="dh-dist">— cm</div>
+      <div class="dh-text">
+        <div class="dh-title">Distance the box traveled</div>
+        <div class="dh-sub" id="dh-sub">Measured from where the crash happened</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────
+const canvas = document.getElementById('track-canvas');
+const ctx    = canvas.getContext('2d');
+
+const CART_W = 48, CART_H = 32;
+const BOX_W  = 36, BOX_H  = 40;
+// Scale: how many canvas-px represent 1 cm/s of velocity per second
+// Track represents 100 cm visually; canvas inner width maps to 100 cm
+// So 1 cm = (W-16)/100 pixels
+const TY_R   = 0.58;
+
+let S = {
+  running:  false,
+  collided: false,
+  lastTime: null,
+  sparks:   [],
+  cart: { x:0, v:10, m:10, w:CART_W, h:CART_H },
+  box:  { x:0, v:0,  m:200, w:BOX_W,  h:BOX_H  }, // box mass fixed at 200g (not shown)
+  vcInit:  10,
+  vcAfter: null,
+  vbAfter: null,
+  boxStartX:   0,   // x-position of box at moment of collision
+  boxDistCm:   0,   // cm traveled after collision (live)
+  targetDistCm: 0,  // exact final distance box will travel (from formula)
+  W: 0, H: 0,
+  pxPerCm: 1        // recalculated on resize
+};
+
+// ── RESIZE ────────────────────────────────────────────────
+function resize() {
+  const rect = canvas.getBoundingClientRect();
+  const dpr  = window.devicePixelRatio || 1;
+  canvas.width  = rect.width  * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+  S.W = rect.width;
+  S.H = rect.height;
+  S.pxPerCm = (S.W - 16) / 1700;  // track spans 1700 cm
+  if (!S.running) resetPositions();
+  drawFrame();
+}
+window.addEventListener('resize', resize);
+setTimeout(resize, 60);
+
+function resetPositions() {
+  S.cart.x = 8 + S.pxPerCm * 10;   // 10 cm from left
+  S.box.x  = 8 + S.pxPerCm * 200;  // 200 cm from left
+  S.cart.v = +document.getElementById('vc').value;
+  S.box.v  = 0;
+  S.boxDistCm = 0;
+}
+
+// ── PHYSICS ───────────────────────────────────────────────
+// Derived from original sim data:
+// d = 0.025 * m * v²  (d in cm, m in grams, v in speed units)
+const K = 0.025;
+
+function doCollision() {
+  const v = S.cart.v;
+  const m = S.cart.m;
+
+  // Cart stops, box slides to a fixed distance
+  S.vcAfter      = 0;
+  S.cart.v       = 0;
+  S.targetDistCm = K * m * v * v;   // exact distance box will travel
+  S.vbAfter      = v;               // initial box speed = cart speed
+}
+
+// ── DRAW ──────────────────────────────────────────────────
+function drawFrame() {
+  const { W, H, pxPerCm } = S;
+  const TY = H * TY_R;
+  const GY = H * 0.67;
+  const c  = ctx;
+
+  c.clearRect(0, 0, W, H);
+
+  // Sky gradient
+  const sky = c.createLinearGradient(0, 0, 0, GY);
+  sky.addColorStop(0, '#dbeafe');
+  sky.addColorStop(1, '#f0f9ff');
+  c.fillStyle = sky;
+  c.fillRect(0, 0, W, GY);
+
+  // Ground
+  c.fillStyle = '#cbd5e1'; c.fillRect(0, GY, W, H - GY);
+  c.fillStyle = '#94a3b8'; c.fillRect(0, GY, W, 3);
+
+  // Rail
+  c.fillStyle = '#475569'; c.fillRect(8, TY, W - 16, 5);
+  c.fillStyle = '#94a3b8'; c.fillRect(8, TY, W - 16, 2);
+
+  // Ties
+  for (let x = 14; x < W - 14; x += 26) {
+    c.fillStyle = '#92400e'; c.fillRect(x, TY + 4, 16, 10);
+    c.fillStyle = '#78350f'; c.fillRect(x, TY + 4, 16, 2);
+  }
+
+  // Distance ruler markers (every 200 cm, for 1700 cm track)
+  c.textAlign = 'center';
+  for (let i = 0; i * 200 <= 1700; i++) {
+    const mx = 8 + i * pxPerCm * 200;
+    if (mx > W - 8) break;
+    c.fillStyle = '#94a3b8';
+    c.font = '10px Nunito, sans-serif';
+    c.fillText(`${i * 200}`, mx, GY + 16);
+    c.fillStyle = '#cbd5e1';
+    c.fillRect(mx - 0.5, TY + 5, 1, 8);
+  }
+  c.fillStyle = '#94a3b8';
+  c.font = '10px Nunito, sans-serif';
+  c.textAlign = 'right';
+  c.fillText('cm', W - 4, GY + 16);
+
+  // Distance measurement line (collision point → current box position)
+  if (S.collided && S.boxDistCm > 0.05) {
+    const colPx  = S.boxStartX + BOX_W / 2;
+    const boxPx  = S.box.x    + BOX_W / 2;
+    const lineY  = GY + 28;
+
+    c.setLineDash([4, 4]);
+    c.strokeStyle = '#f97316'; c.lineWidth = 2;
+    c.beginPath(); c.moveTo(colPx, lineY); c.lineTo(boxPx, lineY); c.stroke();
+    c.setLineDash([]);
+
+    [[colPx, lineY], [boxPx, lineY]].forEach(([lx, ly]) => {
+      c.strokeStyle = '#f97316'; c.lineWidth = 2;
+      c.beginPath(); c.moveTo(lx, ly - 5); c.lineTo(lx, ly + 5); c.stroke();
+    });
+
+    const midPx = (colPx + boxPx) / 2;
+    c.fillStyle = '#c2410c';
+    c.font = 'bold 12px Nunito, sans-serif';
+    c.textAlign = 'center';
+    c.fillText(`${S.boxDistCm.toFixed(1)} cm`, midPx, lineY - 6);
+  }
+
+  // Sparks
+  S.sparks.forEach(sp => {
+    c.beginPath();
+    c.arc(sp.x, sp.y, Math.max(0.1, sp.r * sp.life), 0, Math.PI * 2);
+    c.fillStyle = `rgba(${sp.col},${sp.life.toFixed(2)})`;
+    c.fill();
+  });
+
+  // Objects
+  drawCart(c, S.cart, TY);
+  drawBox(c,  S.box,  TY);
+
+  // Velocity arrows while running
+  if (S.running) {
+    const arrowScale = Math.min(pxPerCm * 1.2, 3);
+    if (Math.abs(S.cart.v) > 0.2)
+      drawArrow(c, S.cart.x + CART_W/2, TY - CART_H - 14, S.cart.v, '#3b82f6', arrowScale);
+    if (Math.abs(S.box.v) > 0.2)
+      drawArrow(c, S.box.x  + BOX_W/2,  TY - BOX_H  - 14, S.box.v,  '#f97316', arrowScale);
+  }
+}
+
+function drawCart(c, cart, TY) {
+  const { x, w, h } = cart;
+  const top = TY - h;
+
+  c.fillStyle = 'rgba(0,0,0,0.07)';
+  c.beginPath(); c.ellipse(x+w/2, TY+9, w/2-1, 4, 0, 0, Math.PI*2); c.fill();
+
+  c.fillStyle = '#3b82f6';
+  rr(c, x, top, w, h, 6); c.fill();
+  c.strokeStyle = '#1d4ed8'; c.lineWidth = 2;
+  rr(c, x, top, w, h, 6); c.stroke();
+
+  c.fillStyle = 'rgba(255,255,255,0.25)';
+  rr(c, x+3, top+3, w-6, h*0.36, 4); c.fill();
+
+  c.fillStyle = 'white';
+  c.font = 'bold 10px Nunito, sans-serif';
+  c.textAlign = 'center';
+  c.fillText(`${cart.m}g`, x+w/2, top+h/2+4);
+
+  [[x+10, TY+6],[x+w-10, TY+6]].forEach(([wx, wy]) => {
+    c.fillStyle = '#1e293b'; c.beginPath(); c.arc(wx,wy,6,0,Math.PI*2); c.fill();
+    c.strokeStyle = '#1d4ed8'; c.lineWidth = 1.5;
+    c.beginPath(); c.arc(wx,wy,6,0,Math.PI*2); c.stroke();
+    c.fillStyle = '#3b82f6'; c.beginPath(); c.arc(wx,wy,2,0,Math.PI*2); c.fill();
+  });
+}
+
+function drawBox(c, box, TY) {
+  const { x, w, h } = box;
+  const top = TY - h;
+
+  c.fillStyle = 'rgba(0,0,0,0.07)';
+  c.beginPath(); c.ellipse(x+w/2, TY+8, w/2, 4, 0, 0, Math.PI*2); c.fill();
+
+  c.fillStyle = '#fb923c';
+  rr(c, x, top, w, h, 5); c.fill();
+  c.strokeStyle = '#c2410c'; c.lineWidth = 2;
+  rr(c, x, top, w, h, 5); c.stroke();
+
+  // lid line
+  c.strokeStyle = '#c2410c'; c.lineWidth = 1.2;
+  c.beginPath(); c.moveTo(x+3, top+h*0.28); c.lineTo(x+w-3, top+h*0.28); c.stroke();
+
+  // tape cross
+  c.strokeStyle = '#fbbf24'; c.lineWidth = 1.8;
+  c.beginPath(); c.moveTo(x+w/2, top+h*0.28); c.lineTo(x+w/2, top+h-3); c.stroke();
+  c.beginPath(); c.moveTo(x+3, top+h*0.6);   c.lineTo(x+w-3, top+h*0.6); c.stroke();
+
+  // no weight label on box
+}
+
+function drawArrow(c, cx, ay, vel, color, scale) {
+  if (Math.abs(vel) < 0.3) return;
+  const len = Math.min(Math.abs(vel) * scale * 1.2, 40);
+  const d   = Math.sign(vel);
+  const ex  = cx + d * len;
+
+  c.strokeStyle = color; c.lineWidth = 2; c.lineCap = 'round';
+  c.beginPath(); c.moveTo(cx, ay); c.lineTo(ex, ay); c.stroke();
+
+  c.fillStyle = color;
+  c.beginPath(); c.moveTo(ex, ay); c.lineTo(ex-d*6, ay-3); c.lineTo(ex-d*6, ay+3); c.closePath(); c.fill();
+
+  c.fillStyle = color;
+  c.font = 'bold 9px Nunito, sans-serif';
+  c.textAlign = 'center';
+  c.fillText(`${Math.abs(vel).toFixed(1)}`, ex, ay-6);
+}
+
+function rr(c, x, y, w, h, r) {
+  c.beginPath();
+  c.moveTo(x+r, y);
+  c.lineTo(x+w-r, y); c.arcTo(x+w, y, x+w, y+r, r);
+  c.lineTo(x+w, y+h-r); c.arcTo(x+w, y+h, x+w-r, y+h, r);
+  c.lineTo(x+r, y+h); c.arcTo(x, y+h, x, y+h-r, r);
+  c.lineTo(x, y+r); c.arcTo(x, y, x+r, y, r);
+  c.closePath();
+}
+
+// ── SPARKS ────────────────────────────────────────────────
+function spawnSparks(x, y) {
+  for (let i = 0; i < 20; i++) {
+    const a  = Math.random() * Math.PI * 2;
+    const sp = 2 + Math.random() * 4;
+    S.sparks.push({
+      x, y, vx: Math.cos(a)*sp, vy: Math.sin(a)*sp-3,
+      r: 3+Math.random()*3, life:1,
+      col: Math.random()>.5 ? '255,200,0' : '255,100,30'
+    });
+  }
+}
+
+// ── GAME LOOP ──────────────────────────────────────────────
+function gameLoop(ts) {
+  if (!S.running) return;
+  if (!S.lastTime) S.lastTime = ts;
+  const dt = Math.min((ts - S.lastTime) / 1000, 0.05);
+  S.lastTime = ts;
+
+  const { W, pxPerCm } = S;
+
+  if (!S.collided) {
+    // Cart rolling toward box — multiply by 80 for snappy visual speed
+    S.cart.x += S.cart.v * pxPerCm * dt * 80;
+
+    // Collision detection
+    if (S.cart.x + CART_W >= S.box.x) {
+      S.cart.x    = S.box.x - CART_W;
+      S.boxStartX = S.box.x;
+      S.boxDistCm = 0;
+      S.collided  = true;
+      doCollision();
+      onCollision();
+    }
+  } else {
+    // After collision: box slides toward its exact target distance, decelerating
+    const targetPx  = S.boxStartX + S.targetDistCm * pxPerCm;
+    const remaining = targetPx - S.box.x;
+
+    if (remaining > 0.5) {
+      // Ease-out: move a fraction of remaining distance each frame
+      // Speed proportional to remaining distance → natural deceleration
+      const step = Math.max(remaining * 4 * dt, 0.3);
+      S.box.x += Math.min(step, remaining);
+      S.box.v  = (S.box.x - S.boxStartX) / pxPerCm; // pseudo-velocity for arrow display
+    } else {
+      // Snap to final position
+      S.box.x = targetPx;
+      S.box.v = 0;
+    }
+
+    // Update live distance counter
+    S.boxDistCm = (S.box.x - S.boxStartX) / pxPerCm;
+    if (S.boxDistCm < 0) S.boxDistCm = 0;
+    document.getElementById('dh-dist').textContent = S.boxDistCm.toFixed(1) + ' cm';
+  }
+
+  // Sparks decay
+  S.sparks = S.sparks.filter(sp => sp.life > 0.04);
+  S.sparks.forEach(sp => { sp.x+=sp.vx; sp.y+=sp.vy; sp.vy+=0.2; sp.life*=0.88; });
+
+  updateLive();
+  drawFrame();
+  requestAnimationFrame(gameLoop);
+}
+
+// ── COLLISION EVENT ────────────────────────────────────────
+function onCollision() {
+  const fl = document.getElementById('flash-overlay');
+  fl.classList.add('active');
+  setTimeout(() => fl.classList.remove('active'), 350);
+
+  spawnSparks(S.box.x + 2, S.H * TY_R - 18);
+
+  const card = document.getElementById('results-card');
+  card.style.display = 'block';
+  // scrollIntoView removed to prevent automatic page scrolling
+
+  const { vcInit, vcAfter, vbAfter, cart, box, targetDistCm } = S;
+
+  document.getElementById('rb-before-cart').textContent = `Before: ${vcInit.toFixed(0)} (moving right)`;
+  document.getElementById('rb-after-cart').textContent  = 'stopped';
+  document.getElementById('rb-after-box').textContent   = `moving right`;
+
+  document.getElementById('dh-dist').textContent = '0.0 cm';
+  document.getElementById('dh-sub').textContent  = 'Measured from where the crash happened';
+}
+
+// ── LIVE READOUT ──────────────────────────────────────────
+function updateLive() {
+  const { cart, box, collided } = S;
+  document.getElementById('live-cart').textContent =
+    Math.abs(cart.v) < 0.1 ? 'stopped' : Math.abs(cart.v).toFixed(1);
+
+  if (Math.abs(box.v) < 0.1) {
+    document.getElementById('live-box').textContent = collided ? 'stopped' : 'not moving';
+  } else {
+    document.getElementById('live-box').textContent = Math.abs(box.v).toFixed(1);
+  }
+}
+
+// ── CONTROLS ──────────────────────────────────────────────
+function readControls() {
+  S.cart.m = +document.getElementById('mc').value;
+  S.cart.v = +document.getElementById('vc').value;
+  S.box.v  = 0;
+}
+
+document.getElementById('btn-launch').addEventListener('click', () => {
+  if (S.running) return;
+  readControls();
+  resetPositions();
+  S.collided     = false;
+  S.vcAfter      = S.vbAfter = null;
+  S.lastTime     = null;
+  S.sparks       = [];
+  S.running      = true;
+  S.vcInit       = S.cart.v;
+  S.boxDistCm    = 0;
+  S.targetDistCm = 0;
+  document.getElementById('results-card').style.display = 'none';
+  updateLive();
+  requestAnimationFrame(gameLoop);
+});
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+  S.running      = false;
+  S.collided     = false;
+  S.sparks       = [];
+  S.boxDistCm    = 0;
+  S.targetDistCm = 0;
+  readControls();
+  resetPositions();
+  document.getElementById('results-card').style.display = 'none';
+  updateLive();
+  drawFrame();
+});
+
+canvas.addEventListener('click', () => {
+  if (S.running) {
+    S.running = false;
+  } else if (!S.collided) {
+    S.lastTime = null;
+    S.running  = true;
+    requestAnimationFrame(gameLoop);
+  }
+});
+
+document.getElementById('mc').addEventListener('input', e => {
+  document.getElementById('mc-badge').textContent = e.target.value + ' g';
+  S.cart.m = +e.target.value;
+  if (!S.running) drawFrame();
+});
+
+document.getElementById('vc').addEventListener('input', e => {
+  document.getElementById('vc-badge').textContent = e.target.value;
+  S.cart.v = +e.target.value;
+  if (!S.running) { updateLive(); drawFrame(); }
+});
+
+
+</script>
+</body>
+</html>

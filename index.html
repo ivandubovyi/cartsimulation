@@ -95,7 +95,6 @@
   }
   .btn-reset:hover { border-color:var(--blue); color:var(--blue); }
 
-  /* RESULTS */
   #results-card { display:none; animation:popIn .4s cubic-bezier(.34,1.56,.64,1); }
   @keyframes popIn { from{opacity:0;transform:scale(.92)} to{opacity:1;transform:scale(1)} }
 
@@ -143,11 +142,10 @@
 <div class="page">
 
   <header>
-    <h1>Cart & Box Lab</h1>
-    <p>The cart rolls and crashes into the box — watch what happens!</p>
+    <h1>Cart Simulation</h1>
+    <p>Cart rolls into the box - watch what happens!</p>
   </header>
 
-  <!-- TRACK -->
   <div class="card">
     <div class="card-title">Track</div>
     <canvas id="track-canvas"></canvas>
@@ -164,12 +162,12 @@
     <p class="track-hint">Click the track to pause / resume</p>
   </div>
 
-  <!-- SETUP -->
+
   <div class="card">
     <div class="card-title">Set Up the Experiment</div>
     <div class="setup-grid">
 
-      <!-- CART -->
+
       <div class="setup-box cart-box">
         <h3>Rolling Cart</h3>
 
@@ -234,7 +232,7 @@
 </div>
 
 <script>
-// ── STATE ──────────────────────────────────────────────────
+  
 const canvas = document.getElementById('track-canvas');
 const ctx    = canvas.getContext('2d');
 
@@ -261,8 +259,7 @@ let S = {
   W: 0, H: 0,
   pxPerCm: 1        // recalculated on resize
 };
-
-// ── RESIZE ────────────────────────────────────────────────
+  
 function resize() {
   const rect = canvas.getBoundingClientRect();
   const dpr  = window.devicePixelRatio || 1;

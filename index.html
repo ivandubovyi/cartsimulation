@@ -95,6 +95,7 @@
   }
   .btn-reset:hover { border-color:var(--blue); color:var(--blue); }
 
+  /* RESULTS */
   #results-card { display:none; animation:popIn .4s cubic-bezier(.34,1.56,.64,1); }
   @keyframes popIn { from{opacity:0;transform:scale(.92)} to{opacity:1;transform:scale(1)} }
 
@@ -142,10 +143,11 @@
 <div class="page">
 
   <header>
-    <h1>Cart Simulation</h1>
-    <p>Cart rolls into the box - watch what happens!</p>
+    <h1>Cart & Box Lab</h1>
+    <p>The cart rolls and crashes into the box — watch what happens!</p>
   </header>
 
+  <!-- TRACK -->
   <div class="card">
     <div class="card-title">Track</div>
     <canvas id="track-canvas"></canvas>
@@ -162,12 +164,12 @@
     <p class="track-hint">Click the track to pause / resume</p>
   </div>
 
-
+  <!-- SETUP -->
   <div class="card">
     <div class="card-title">Set Up the Experiment</div>
     <div class="setup-grid">
 
-
+      <!-- CART -->
       <div class="setup-box cart-box">
         <h3>Rolling Cart</h3>
 
@@ -189,6 +191,21 @@
 
         <p style="font-size:12px;color:var(--text-soft);margin-top:2px">Always rolls right toward the box.</p>
       </div>
+
+
+      <!-- HOW IT WORKS -->
+      <div class="setup-box" style="background: var(--orange-light); border:2px solid var(--orange);">
+        <h3 style="color:#c2410c;">How This Simulation Works</h3>
+        <p style="font-size:13px; color:var(--text-soft); line-height:1.5;">
+          The cart rolls to the right with the selected speed and mass.
+          When it hits the box, the cart stops and transfers its energy to the box.
+          The box then slides forward based on the formula:
+        </p>        <p style="font-size:13px; color:var(--text-soft); line-height:1.5;">
+          The track starts at 400 cm. If the box needs more room,
+          the track automatically expands so you can see the full motion.
+        </p>
+      </div>
+
     </div>
   </div>
 
@@ -231,44 +248,57 @@
 
 </div>
 
-<script>
-  
+<script>// ── STATE ──────────────────────────────────────────────────
 const canvas = document.getElementById('track-canvas');
 const ctx    = canvas.getContext('2d');
 
 const CART_W = 48, CART_H = 32;
 const BOX_W  = 36, BOX_H  = 40;
-// Scale: how many canvas-px represent 1 cm/s of velocity per second
-// Track represents 100 cm visually; canvas inner width maps to 100 cm
-// So 1 cm = (W-16)/100 pixels
+
 const TY_R   = 0.58;
+
+// Track behavior:
+// - Starts as 400 cm visible
+// - If the box needs more room, the visible track length smoothly increases
+const TRACK_START_CM = 400;
 
 let S = {
   running:  false,
   collided: false,
+  collisionTime: null,
+  delayAfterCollision: 0, // box starts moving immediately (only page scroll is delayed)
   lastTime: null,
   sparks:   [],
-  cart: { x:0, v:10, m:10, w:CART_W, h:CART_H },
-  box:  { x:0, v:0,  m:200, w:BOX_W,  h:BOX_H  }, // box mass fixed at 200g (not shown)
+  cart: { cmX:0, v:10, m:10, w:CART_W, h:CART_H },
+  box:  { cmX:0, v:0,  m:200, w:BOX_W,  h:BOX_H  }, // box mass fixed at 200g (not shown)
   vcInit:  10,
   vcAfter: null,
   vbAfter: null,
-  boxStartX:   0,   // x-position of box at moment of collision
-  boxDistCm:   0,   // cm traveled after collision (live)
-  targetDistCm: 0,  // exact final distance box will travel (from formula)
+  boxStartCm:   0,   // box position (cm) at moment of collision
+  boxDistCm:    0,   // cm traveled after collision (live)
+  targetDistCm: 0,   // exact final distance box will travel (from formula)
+  trackCm: TRACK_START_CM,
   W: 0, H: 0,
-  pxPerCm: 1        // recalculated on resize
+  pxPerCm: 1        // recalculated on resize / when track expands
 };
-  
+
+function cmToPx(cm){ return 8 + cm * S.pxPerCm; }
+function cartWidthCm(){ return CART_W / S.pxPerCm; }
+function boxWidthCm(){  return BOX_W  / S.pxPerCm; }
+
+// ── RESIZE ────────────────────────────────────────────────
 function resize() {
   const rect = canvas.getBoundingClientRect();
   const dpr  = window.devicePixelRatio || 1;
   canvas.width  = rect.width  * dpr;
   canvas.height = rect.height * dpr;
-  ctx.scale(dpr, dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // reset scale cleanly
   S.W = rect.width;
   S.H = rect.height;
-  S.pxPerCm = (S.W - 16) / 1700;  // track spans 1700 cm
+
+  // px-per-cm depends on currently visible track length
+  S.pxPerCm = (S.W - 16) / S.trackCm;
+
   if (!S.running) resetPositions();
   drawFrame();
 }
@@ -276,11 +306,12 @@ window.addEventListener('resize', resize);
 setTimeout(resize, 60);
 
 function resetPositions() {
-  S.cart.x = 8 + S.pxPerCm * 10;   // 10 cm from left
-  S.box.x  = 8 + S.pxPerCm * 200;  // 200 cm from left
+  S.cart.cmX = 10;   // 10 cm from left
+  S.box.cmX  = 200;  // 200 cm from left (fits within the 400 cm start)
   S.cart.v = +document.getElementById('vc').value;
   S.box.v  = 0;
   S.boxDistCm = 0;
+  S.collisionTime = null;
 }
 
 // ── PHYSICS ───────────────────────────────────────────────
@@ -301,7 +332,7 @@ function doCollision() {
 
 // ── DRAW ──────────────────────────────────────────────────
 function drawFrame() {
-  const { W, H, pxPerCm } = S;
+  const { W, H, pxPerCm, trackCm } = S;
   const TY = H * TY_R;
   const GY = H * 0.67;
   const c  = ctx;
@@ -329,14 +360,18 @@ function drawFrame() {
     c.fillStyle = '#78350f'; c.fillRect(x, TY + 4, 16, 2);
   }
 
-  // Distance ruler markers (every 200 cm, for 1700 cm track)
+  // Ruler markers (auto step depending on current visible track length)
+  let step = 50;
+  if (trackCm > 600) step = 100;
+  if (trackCm > 1200) step = 200;
+
   c.textAlign = 'center';
-  for (let i = 0; i * 200 <= 1700; i++) {
-    const mx = 8 + i * pxPerCm * 200;
+  for (let cm = 0; cm <= trackCm + 0.001; cm += step) {
+    const mx = cmToPx(cm);
     if (mx > W - 8) break;
     c.fillStyle = '#94a3b8';
     c.font = '10px Nunito, sans-serif';
-    c.fillText(`${i * 200}`, mx, GY + 16);
+    c.fillText(`${Math.round(cm)}`, mx, GY + 16);
     c.fillStyle = '#cbd5e1';
     c.fillRect(mx - 0.5, TY + 5, 1, 8);
   }
@@ -347,8 +382,8 @@ function drawFrame() {
 
   // Distance measurement line (collision point → current box position)
   if (S.collided && S.boxDistCm > 0.05) {
-    const colPx  = S.boxStartX + BOX_W / 2;
-    const boxPx  = S.box.x    + BOX_W / 2;
+    const colPx  = cmToPx(S.boxStartCm) + BOX_W / 2;
+    const boxPx  = cmToPx(S.box.cmX)    + BOX_W / 2;
     const lineY  = GY + 28;
 
     c.setLineDash([4, 4]);
@@ -376,17 +411,17 @@ function drawFrame() {
     c.fill();
   });
 
-  // Objects
-  drawCart(c, S.cart, TY);
-  drawBox(c,  S.box,  TY);
+  // Objects (converted from cm to px)
+  drawCart(c, { ...S.cart, x: cmToPx(S.cart.cmX) }, TY);
+  drawBox(c,  { ...S.box,  x: cmToPx(S.box.cmX)  }, TY);
 
   // Velocity arrows while running
   if (S.running) {
     const arrowScale = Math.min(pxPerCm * 1.2, 3);
     if (Math.abs(S.cart.v) > 0.2)
-      drawArrow(c, S.cart.x + CART_W/2, TY - CART_H - 14, S.cart.v, '#3b82f6', arrowScale);
+      drawArrow(c, cmToPx(S.cart.cmX) + CART_W/2, TY - CART_H - 14, S.cart.v, '#3b82f6', arrowScale);
     if (Math.abs(S.box.v) > 0.2)
-      drawArrow(c, S.box.x  + BOX_W/2,  TY - BOX_H  - 14, S.box.v,  '#f97316', arrowScale);
+      drawArrow(c, cmToPx(S.box.cmX)  + BOX_W/2,  TY - BOX_H  - 14, S.box.v,  '#f97316', arrowScale);
   }
 }
 
@@ -438,8 +473,6 @@ function drawBox(c, box, TY) {
   c.strokeStyle = '#fbbf24'; c.lineWidth = 1.8;
   c.beginPath(); c.moveTo(x+w/2, top+h*0.28); c.lineTo(x+w/2, top+h-3); c.stroke();
   c.beginPath(); c.moveTo(x+3, top+h*0.6);   c.lineTo(x+w-3, top+h*0.6); c.stroke();
-
-  // no weight label on box
 }
 
 function drawArrow(c, cx, ay, vel, color, scale) {
@@ -490,42 +523,67 @@ function gameLoop(ts) {
   const dt = Math.min((ts - S.lastTime) / 1000, 0.05);
   S.lastTime = ts;
 
-  const { W, pxPerCm } = S;
+  // Keep pxPerCm synced with track length (for smooth "track getting bigger")
+  S.pxPerCm = (S.W - 16) / S.trackCm;
 
   if (!S.collided) {
-    // Cart rolling toward box — multiply by 80 for snappy visual speed
-    S.cart.x += S.cart.v * pxPerCm * dt * 80;
+    // Cart rolling toward box — in cm space: v * dt * 80
+    S.cart.cmX += S.cart.v * dt * 60;
 
-    // Collision detection
-    if (S.cart.x + CART_W >= S.box.x) {
-      S.cart.x    = S.box.x - CART_W;
-      S.boxStartX = S.box.x;
-      S.boxDistCm = 0;
-      S.collided  = true;
+    // Collision detection (in cm space)
+    if (S.cart.cmX + cartWidthCm() >= S.box.cmX) {
+      S.cart.cmX     = S.box.cmX - cartWidthCm();
+      S.boxStartCm   = S.box.cmX;
+      S.boxDistCm    = 0;
+      S.collided     = true;
+      S.collisionTime = ts;
+
       doCollision();
       onCollision();
+
+      // Ensure track can eventually show the full travel (will animate larger if needed)
+      const needed = S.boxStartCm + S.targetDistCm + 60; // small margin
+      if (needed > S.trackCm) S.trackCm = Math.max(S.trackCm, TRACK_START_CM);
     }
   } else {
-    // After collision: box slides toward its exact target distance, decelerating
-    const targetPx  = S.boxStartX + S.targetDistCm * pxPerCm;
-    const remaining = targetPx - S.box.x;
-
-    if (remaining > 0.5) {
-      // Ease-out: move a fraction of remaining distance each frame
-      // Speed proportional to remaining distance → natural deceleration
-      const step = Math.max(remaining * 4 * dt, 0.3);
-      S.box.x += Math.min(step, remaining);
-      S.box.v  = (S.box.x - S.boxStartX) / pxPerCm; // pseudo-velocity for arrow display
-    } else {
-      // Snap to final position
-      S.box.x = targetPx;
-      S.box.v = 0;
+    // Expand track smoothly if box travel needs more than currently visible
+    const needed = S.boxStartCm + S.targetDistCm + 60;
+    if (needed > S.trackCm) {
+      // Smooth approach (zoom out) — rate scaled by dt
+      S.trackCm += (needed - S.trackCm) * Math.min(1, dt * 1.8);
+      if (S.trackCm > needed) S.trackCm = needed;
+      S.pxPerCm = (S.W - 16) / S.trackCm;
     }
 
-    // Update live distance counter
-    S.boxDistCm = (S.box.x - S.boxStartX) / pxPerCm;
-    if (S.boxDistCm < 0) S.boxDistCm = 0;
-    document.getElementById('dh-dist').textContent = S.boxDistCm.toFixed(1) + ' cm';
+    // Wait 1 second before moving the box
+    if (ts - S.collisionTime >= S.delayAfterCollision) {
+      const targetCm  = S.boxStartCm + S.targetDistCm;
+      const remaining = targetCm - S.box.cmX;
+
+      if (remaining > 0.05) {
+        const minStepCm = 0.3 / S.pxPerCm; // match old 0.3px minimum step
+        const stepCm = Math.max(remaining * 4 * dt, minStepCm);
+        const move = Math.min(stepCm, remaining);
+        S.box.cmX += move;
+
+        // pseudo-velocity in the same "units" as cart.v
+        // cart cm speed = v*60 => v = (cm/s)/60
+        S.box.v = (move / Math.max(dt, 1e-6)) / 60;
+      } else {
+        S.box.cmX = targetCm;
+        S.box.v = 0;
+      }
+
+      // Update live distance counter
+      S.boxDistCm = S.box.cmX - S.boxStartCm;
+      if (S.boxDistCm < 0) S.boxDistCm = 0;
+      document.getElementById('dh-dist').textContent = S.boxDistCm.toFixed(1) + ' cm';
+    } else {
+      // During the 1s wait, show box as "not moving"
+      S.box.v = 0;
+      S.boxDistCm = 0;
+      document.getElementById('dh-dist').textContent = '0.0 cm';
+    }
   }
 
   // Sparks decay
@@ -543,15 +601,18 @@ function onCollision() {
   fl.classList.add('active');
   setTimeout(() => fl.classList.remove('active'), 350);
 
-  spawnSparks(S.box.x + 2, S.H * TY_R - 18);
+  // Sparks at collision point (pixel space)
+  spawnSparks(cmToPx(S.box.cmX) + 2, S.H * TY_R - 18);
 
+  // Show results immediately
   const card = document.getElementById('results-card');
   card.style.display = 'block';
-  // scrollIntoView removed to prevent automatic page scrolling
 
-  const { vcInit, vcAfter, vbAfter, cart, box, targetDistCm } = S;
+  // Scroll down AFTER 1 second (as requested)
+  setTimeout(() => card.scrollIntoView({ behavior:'smooth', block:'nearest' }), 1000);
 
-  document.getElementById('rb-before-cart').textContent = `Before: ${vcInit.toFixed(0)} (moving right)`;
+  document.getElementById('rb-before-cart').textContent =
+    `Before: ${S.vcInit.toFixed(0)} (moving right)`;
   document.getElementById('rb-after-cart').textContent  = 'stopped';
   document.getElementById('rb-after-box').textContent   = `moving right`;
 
@@ -582,7 +643,12 @@ function readControls() {
 document.getElementById('btn-launch').addEventListener('click', () => {
   if (S.running) return;
   readControls();
-  resetPositions();
+
+  // Reset track to the starting 400cm view for each run
+  S.trackCm = TRACK_START_CM;
+
+  resize(); // recalculates pxPerCm based on trackCm
+
   S.collided     = false;
   S.vcAfter      = S.vbAfter = null;
   S.lastTime     = null;
@@ -591,6 +657,8 @@ document.getElementById('btn-launch').addEventListener('click', () => {
   S.vcInit       = S.cart.v;
   S.boxDistCm    = 0;
   S.targetDistCm = 0;
+  S.collisionTime = null;
+
   document.getElementById('results-card').style.display = 'none';
   updateLive();
   requestAnimationFrame(gameLoop);
@@ -602,8 +670,13 @@ document.getElementById('btn-reset').addEventListener('click', () => {
   S.sparks       = [];
   S.boxDistCm    = 0;
   S.targetDistCm = 0;
+  S.collisionTime = null;
+
+  // Reset track view
+  S.trackCm = TRACK_START_CM;
+
   readControls();
-  resetPositions();
+  resize();
   document.getElementById('results-card').style.display = 'none';
   updateLive();
   drawFrame();
@@ -629,9 +702,6 @@ document.getElementById('vc').addEventListener('input', e => {
   document.getElementById('vc-badge').textContent = e.target.value;
   S.cart.v = +e.target.value;
   if (!S.running) { updateLive(); drawFrame(); }
-});
-
-
-</script>
+});</script>
 </body>
 </html>

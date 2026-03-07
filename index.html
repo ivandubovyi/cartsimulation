@@ -33,21 +33,11 @@
   header h1 { font-size:30px; font-weight:900; color:var(--blue-dark); }
   header p  { font-size:15px; color:var(--text-soft); margin-top:4px; }
 
-  .card {
-    background:var(--white); border-radius:20px;
-    box-shadow:var(--shadow); padding:20px; margin-bottom:16px;
-  }
-  .card-title {
-    font-size:12px; font-weight:800; text-transform:uppercase;
-    letter-spacing:1.2px; color:var(--gray); margin-bottom:14px;
-  }
+  .card { background:var(--white); border-radius:20px; box-shadow:var(--shadow); padding:20px; margin-bottom:16px; }
+  .card-title { font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray); margin-bottom:14px; }
 
   /* TRACK */
-  #track-canvas {
-    width:100%; height:210px;
-    border-radius:14px; border:2px solid var(--border);
-    display:block; cursor:pointer; background:#f0f7ff;
-  }
+  #track-canvas { width:100%; height:210px; border-radius:14px; border:2px solid var(--border); display:block; cursor:pointer; }
   .track-hint { text-align:center; font-size:12px; color:var(--gray); margin-top:6px; }
 
   /* live chips */
@@ -63,14 +53,17 @@
   /* SETUP */
   .setup-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
   .setup-box { border-radius:16px; padding:16px; }
-  .setup-box.cart-box { background:var(--blue-light); border:2px solid var(--blue); }
+  .setup-box.cart-box { background:var(--blue-light);  border:2px solid var(--blue); }
+  .setup-box.wind-box { background:#f0fdf4;             border:2px solid var(--green); }
   .setup-box h3 { font-size:16px; font-weight:800; margin-bottom:14px; }
-  .cart-box h3 { color:var(--blue-dark); }
+  .cart-box h3  { color:var(--blue-dark); }
+  .wind-box h3  { color:#15803d; }
 
   .ctrl-row { margin-bottom:14px; }
   .ctrl-label { display:flex; justify-content:space-between; align-items:center; font-size:14px; font-weight:700; margin-bottom:6px; }
   .val-badge { font-size:13px; font-weight:800; padding:2px 10px; border-radius:20px; min-width:50px; text-align:center; }
-  .cart-box .val-badge { background:var(--blue); color:white; }
+  .cart-box .val-badge { background:var(--blue);  color:white; }
+  .wind-box .val-badge { background:var(--green); color:white; }
 
   input[type="range"] { width:100%; height:6px; -webkit-appearance:none; border-radius:6px; outline:none; cursor:pointer; }
   .cart-box input[type="range"] { background:#93c5fd; }
@@ -78,19 +71,35 @@
     -webkit-appearance:none; width:20px; height:20px; border-radius:50%;
     background:var(--blue); border:3px solid white; box-shadow:0 2px 6px rgba(59,130,246,.5); cursor:pointer;
   }
+  .wind-box input[type="range"] { background:#86efac; }
+  .wind-box input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance:none; width:20px; height:20px; border-radius:50%;
+    background:var(--green); border:3px solid white; box-shadow:0 2px 6px rgba(34,197,94,.4); cursor:pointer;
+  }
+
+  /* SURFACE PICKER */
+  .surface-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .surf-btn {
+    border-radius:14px; border:2px solid var(--border); background:var(--gray-light);
+    padding:12px 8px; text-align:center; cursor:pointer; transition:all .15s;
+    font-family:'Nunito',sans-serif;
+  }
+  .surf-btn.active { border-color:var(--blue); background:var(--blue-light); }
+  .surf-swatch { width:100%; height:28px; border-radius:8px; margin-bottom:8px; }
+  .surf-name { font-size:13px; font-weight:800; color:var(--text); display:block; }
+  .surf-mu   { font-size:11px; color:var(--text-soft); display:block; margin-top:2px; }
+  .surf-desc { font-size:10px; color:var(--text-soft); display:block; margin-top:3px; line-height:1.4; }
 
   /* BUTTONS */
   .action-row { display:flex; gap:12px; justify-content:center; }
   .btn-launch {
-    padding:14px 44px; border-radius:14px; border:none;
-    background:var(--blue); color:white;
+    padding:14px 44px; border-radius:14px; border:none; background:var(--blue); color:white;
     font-family:'Nunito',sans-serif; font-size:20px; font-weight:900;
     cursor:pointer; box-shadow:0 4px 14px rgba(59,130,246,.4); transition:all .15s;
   }
   .btn-launch:hover { background:var(--blue-dark); transform:translateY(-1px); }
   .btn-reset {
-    padding:14px 24px; border-radius:14px; border:2px solid var(--border);
-    background:white; color:var(--text);
+    padding:14px 24px; border-radius:14px; border:2px solid var(--border); background:white; color:var(--text);
     font-family:'Nunito',sans-serif; font-size:20px; font-weight:800; cursor:pointer; transition:all .15s;
   }
   .btn-reset:hover { border-color:var(--blue); color:var(--blue); }
@@ -110,20 +119,15 @@
   .blue-r   .rb-after { color:var(--blue-dark); }
   .orange-r .rb-after { color:#c2410c; }
 
-  /* Distance highlight box */
   .distance-highlight {
-    background: #fff7ed; border: 2px solid var(--orange);
-    border-radius:14px; padding:14px 18px; margin-bottom:12px;
-    display:flex; align-items:center; gap:16px;
+    background:#fff7ed; border:2px solid var(--orange); border-radius:14px;
+    padding:14px 18px; display:flex; align-items:center; gap:16px;
   }
-  .distance-highlight .dh-num {
-    font-size:36px; font-weight:900; color:#c2410c; white-space:nowrap;
-  }
+  .distance-highlight .dh-num  { font-size:36px; font-weight:900; color:#c2410c; white-space:nowrap; }
   .distance-highlight .dh-text { flex:1; }
   .distance-highlight .dh-title { font-size:14px; font-weight:800; color:#c2410c; margin-bottom:2px; }
   .distance-highlight .dh-sub   { font-size:12px; color:var(--text-soft); }
 
-  /* flash */
   #flash-overlay {
     position:fixed; inset:0;
     background:radial-gradient(circle at center,rgba(255,220,50,.5),transparent 60%);
@@ -131,8 +135,9 @@
   }
   #flash-overlay.active { opacity:1; }
 
-  @media(max-width:560px){
+  @media(max-width:600px){
     .setup-grid,.results-grid { grid-template-columns:1fr; }
+    .surface-grid { grid-template-columns:repeat(2,1fr); }
     header h1 { font-size:24px; }
     .distance-highlight .dh-num { font-size:28px; }
   }
@@ -144,7 +149,7 @@
 
   <header>
     <h1>Cart Simulation</h1>
-    <p>The cart collides with the box - watch what happens!</p>
+    <p>v</p>
   </header>
 
   <!-- TRACK -->
@@ -168,44 +173,60 @@
   <div class="card">
     <div class="card-title">Set Up the Experiment</div>
     <div class="setup-grid">
-
-      <!-- CART -->
       <div class="setup-box cart-box">
         <h3>Rolling Cart</h3>
-
         <div class="ctrl-row">
-          <div class="ctrl-label">
-            Cart mass
-            <span class="val-badge" id="mc-badge">10 g</span>
-          </div>
+          <div class="ctrl-label">Cart mass <span class="val-badge" id="mc-badge">10 g</span></div>
           <input type="range" id="mc" min="1" max="40" step="1" value="10">
         </div>
-
         <div class="ctrl-row">
-          <div class="ctrl-label">
-            Starting speed
-            <span class="val-badge" id="vc-badge">10</span>
-          </div>
+          <div class="ctrl-label">Starting speed <span class="val-badge" id="vc-badge">10</span></div>
           <input type="range" id="vc" min="1" max="40" step="1" value="10">
         </div>
-
         <p style="font-size:12px;color:var(--text-soft);margin-top:2px">Always rolls right toward the box.</p>
       </div>
 
-
-      <!-- HOW IT WORKS -->
-      <div class="setup-box" style="background: var(--orange-light); border:2px solid var(--orange);">
-        <h3 style="color:#c2410c;">How This Simulation Works</h3>
-        <p style="font-size:13px; color:var(--text-soft); line-height:1.5;">
-          The cart rolls to the right with the selected speed and mass.
-          When it collides with the box, the cart stops and transfers its kinetic energy to the box.
-          The box then slides forward based on the mass and speed selected.
-          
-          The track starts at 400 cm. If the box needs more room,
-          the track automatically expands so you can see the full motion.
+      <div class="setup-box wind-box">
+        <h3>Wind Resistance</h3>
+        <div class="ctrl-row">
+          <div class="ctrl-label">Wind strength <span class="val-badge" id="wind-badge">0</span></div>
+          <input type="range" id="wind" min="0" max="10" step="0.5" value="0">
+        </div>
+        <p style="font-size:12px;color:#15803d;line-height:1.6;margin-top:4px">
+          Wind pushes <strong>against</strong> the box as it slides. Higher wind = shorter distance.
         </p>
       </div>
+    </div>
+  </div>
 
+  <!-- SURFACE -->
+  <div class="card">
+    <div class="card-title">Surface Type — affects friction</div>
+    <div class="surface-grid">
+      <button class="surf-btn active" data-surface="ice">
+        <div class="surf-swatch" style="background:linear-gradient(135deg,#e0f2fe,#bae6fd,#e0f2fe);border:1px solid #93c5fd;"></div>
+        <span class="surf-name">Ice</span>
+        <span class="surf-mu">Very low friction</span>
+        <span class="surf-desc">Slippery — box slides a very long way</span>
+      </button>
+      <button class="surf-btn" data-surface="wood">
+        <div class="surf-swatch" style="background:repeating-linear-gradient(90deg,#d97706 0px,#b45309 3px,#d97706 7px);border:1px solid #92400e;"></div>
+        <span class="surf-name">Wood</span>
+        <span class="surf-mu">Low friction</span>
+        <span class="surf-desc">Smooth boards — some resistance</span>
+      </button>
+      <button class="surf-btn" data-surface="concrete">
+        <div class="surf-swatch" style="background:repeating-linear-gradient(45deg,#94a3b8,#94a3b8 2px,#cbd5e1 2px,#cbd5e1 8px);border:1px solid #64748b;"></div>
+        <span class="surf-name">Concrete</span>
+        <span class="surf-mu">Medium friction</span>
+        <span class="surf-desc">Rough pavement — noticeable drag</span>
+      </button>
+      <button class="surf-btn" data-surface="carpet">
+        <div class="surf-swatch" style="background:repeating-linear-gradient(0deg,#7c3aed,#7c3aed 2px,#a78bfa 2px,#a78bfa 5px);border:1px solid #6d28d9;"></div>
+        <span class="surf-name">Carpet</span>
+        <span class="surf-mu">High friction</span>
+        <span class="surf-desc">Thick fibers grip the box — stops quickly</span>
+      </button>
     </div>
   </div>
 
@@ -220,7 +241,6 @@
   <!-- RESULTS -->
   <div class="card" id="results-card">
     <div class="card-title">What happened in the crash?</div>
-
     <div class="results-grid">
       <div class="result-box blue-r">
         <div class="rb-label">Cart</div>
@@ -236,7 +256,6 @@
       </div>
     </div>
 
-    <!-- Box distance highlight -->
     <div class="distance-highlight">
       <div class="dh-num" id="dh-dist">— cm</div>
       <div class="dh-text">
@@ -247,44 +266,52 @@
   </div>
 
 </div>
+<script>
+// ── SURFACES ─────────────────────────────────────────────
+// mu scales the base distance: higher mu = slides farther (less friction slows it)
+// ice has almost no friction, carpet has a lot
+const SURFACES = {
+  ice:      { mu:1.8,  label:'Ice',      rail:'#bae6fd', ground1:'#e0f2fe', ground2:'#7dd3fc', tieColor:null },
+  wood:     { mu:1.0,  label:'Wood',     rail:'#92400e', ground1:'#d97706', ground2:'#b45309', tieColor:'#78350f' },
+  concrete: { mu:0.45, label:'Concrete', rail:'#475569', ground1:'#94a3b8', ground2:'#64748b', tieColor:'#374151' },
+  carpet:   { mu:0.22, label:'Carpet',   rail:'#4c1d95', ground1:'#7c3aed', ground2:'#5b21b6', tieColor:'#3b0764' },
+};
 
-<script>// ── STATE ──────────────────────────────────────────────────
+// ── STATE ─────────────────────────────────────────────────
 const canvas = document.getElementById('track-canvas');
 const ctx    = canvas.getContext('2d');
 
 const CART_W = 48, CART_H = 32;
 const BOX_W  = 36, BOX_H  = 40;
-
 const TY_R   = 0.58;
 
-// Track behavior:
-// - Starts as 400 cm visible
-// - If the box needs more room, the visible track length smoothly increases
-const TRACK_START_CM = 400;
+// Calibrated base constant from original sim: d = K_BASE * mu * m * v²
+// wind reduces distance: windFactor = 1 / (1 + wind * 0.15)
+const K_BASE = 0.025;
 
 let S = {
-  running:  false,
-  collided: false,
-  collisionTime: null,
-  delayAfterCollision: 0, // box starts moving immediately (only page scroll is delayed)
-  lastTime: null,
-  sparks:   [],
-  cart: { cmX:0, v:10, m:10, w:CART_W, h:CART_H },
-  box:  { cmX:0, v:0,  m:200, w:BOX_W,  h:BOX_H  }, // box mass fixed at 200g (not shown)
-  vcInit:  10,
-  vcAfter: null,
-  vbAfter: null,
-  boxStartCm:   0,   // box position (cm) at moment of collision
-  boxDistCm:    0,   // cm traveled after collision (live)
-  targetDistCm: 0,   // exact final distance box will travel (from formula)
-  trackCm: TRACK_START_CM,
-  W: 0, H: 0,
-  pxPerCm: 1        // recalculated on resize / when track expands
+  running:false, collided:false, lastTime:null, sparks:[],
+  cart:{ x:0, v:10, m:10, w:CART_W, h:CART_H },
+  box: { x:0, v:0,  m:200, w:BOX_W,  h:BOX_H },
+  vcInit:10, vcAfter:null, vbAfter:null,
+  boxStartX:0, boxDistCm:0, targetDistCm:0,
+  surface:'ice', windStrength:0,
+  W:0, H:0, pxPerCm:1
 };
 
-function cmToPx(cm){ return 8 + cm * S.pxPerCm; }
-function cartWidthCm(){ return CART_W / S.pxPerCm; }
-function boxWidthCm(){  return BOX_W  / S.pxPerCm; }
+// ── PHYSICS ───────────────────────────────────────────────
+function calcDistance(m, v, surface, wind) {
+  const mu         = SURFACES[surface].mu;
+  const windFactor = 1 / (1 + wind * 0.15);
+  return K_BASE * mu * m * v * v * windFactor;
+}
+
+function doCollision() {
+  S.vcAfter      = 0;
+  S.cart.v       = 0;
+  S.vbAfter      = S.cart.v; // already 0, just for record
+  S.targetDistCm = calcDistance(S.cart.m, S.vcInit, S.surface, S.windStrength);
+}
 
 // ── RESIZE ────────────────────────────────────────────────
 function resize() {
@@ -292,13 +319,9 @@ function resize() {
   const dpr  = window.devicePixelRatio || 1;
   canvas.width  = rect.width  * dpr;
   canvas.height = rect.height * dpr;
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // reset scale cleanly
-  S.W = rect.width;
-  S.H = rect.height;
-
-  // px-per-cm depends on currently visible track length
-  S.pxPerCm = (S.W - 16) / S.trackCm;
-
+  ctx.scale(dpr, dpr);
+  S.W = rect.width; S.H = rect.height;
+  S.pxPerCm = (S.W - 16) / 3000;
   if (!S.running) resetPositions();
   drawFrame();
 }
@@ -306,402 +329,304 @@ window.addEventListener('resize', resize);
 setTimeout(resize, 60);
 
 function resetPositions() {
-  S.cart.cmX = 10;   // 10 cm from left
-  S.box.cmX  = 200;  // 200 cm from left (fits within the 400 cm start)
+  S.cart.x = 8 + S.pxPerCm * 10;
+  S.box.x  = 8 + S.pxPerCm * 200;
   S.cart.v = +document.getElementById('vc').value;
   S.box.v  = 0;
   S.boxDistCm = 0;
-  S.collisionTime = null;
-}
-
-// ── PHYSICS ───────────────────────────────────────────────
-// Derived from original sim data:
-// d = 0.025 * m * v²  (d in cm, m in grams, v in speed units)
-const K = 0.025;
-
-function doCollision() {
-  const v = S.cart.v;
-  const m = S.cart.m;
-
-  // Cart stops, box slides to a fixed distance
-  S.vcAfter      = 0;
-  S.cart.v       = 0;
-  S.targetDistCm = K * m * v * v;   // exact distance box will travel
-  S.vbAfter      = v;               // initial box speed = cart speed
 }
 
 // ── DRAW ──────────────────────────────────────────────────
 function drawFrame() {
-  const { W, H, pxPerCm, trackCm } = S;
+  const { W, H, pxPerCm, surface } = S;
   const TY = H * TY_R;
   const GY = H * 0.67;
   const c  = ctx;
+  const sf = SURFACES[surface];
 
   c.clearRect(0, 0, W, H);
 
-  // Sky gradient
-  const sky = c.createLinearGradient(0, 0, 0, GY);
-  sky.addColorStop(0, '#dbeafe');
-  sky.addColorStop(1, '#f0f9ff');
-  c.fillStyle = sky;
-  c.fillRect(0, 0, W, GY);
+  // Sky
+  const sky = c.createLinearGradient(0,0,0,GY);
+  sky.addColorStop(0,'#dbeafe'); sky.addColorStop(1,'#f0f9ff');
+  c.fillStyle = sky; c.fillRect(0,0,W,GY);
 
-  // Ground
-  c.fillStyle = '#cbd5e1'; c.fillRect(0, GY, W, H - GY);
-  c.fillStyle = '#94a3b8'; c.fillRect(0, GY, W, 3);
+  // Ground — color reflects surface
+  const grd = c.createLinearGradient(0,GY,0,H);
+  grd.addColorStop(0, sf.ground1); grd.addColorStop(1, sf.ground2);
+  c.fillStyle = grd; c.fillRect(0,GY,W,H-GY);
+
+  // Surface texture
+  if (surface === 'carpet') {
+    c.globalAlpha = 0.22;
+    for (let x = 0; x < W; x += 4) {
+      c.strokeStyle = '#a78bfa'; c.lineWidth = 1;
+      c.beginPath(); c.moveTo(x,GY); c.lineTo(x,H); c.stroke();
+    }
+    c.globalAlpha = 1;
+  } else if (surface === 'concrete') {
+    c.globalAlpha = 0.15;
+    c.strokeStyle = '#1e293b'; c.lineWidth = 1;
+    for (let x = 0; x < W; x += 40) { c.beginPath(); c.moveTo(x,GY); c.lineTo(x,H); c.stroke(); }
+    for (let y = GY+10; y < H; y += 18) { c.beginPath(); c.moveTo(0,y); c.lineTo(W,y); c.stroke(); }
+    c.globalAlpha = 1;
+  } else if (surface === 'ice') {
+    c.globalAlpha = 0.3;
+    c.fillStyle = 'white';
+    for (let x = 10; x < W; x += 60) {
+      c.beginPath();
+      c.moveTo(x,GY+2); c.lineTo(x+30,GY+2); c.lineTo(x+28,GY+7); c.lineTo(x+2,GY+7);
+      c.closePath(); c.fill();
+    }
+    c.globalAlpha = 1;
+  } else if (surface === 'wood') {
+    c.globalAlpha = 0.15;
+    c.strokeStyle = '#78350f'; c.lineWidth = 1;
+    for (let x = 0; x < W; x += 30) { c.beginPath(); c.moveTo(x,GY); c.lineTo(x,H); c.stroke(); }
+    c.globalAlpha = 1;
+  }
+
+  // Ground top edge
+  c.fillStyle = sf.ground1; c.fillRect(0,GY,W,3);
 
   // Rail
-  c.fillStyle = '#475569'; c.fillRect(8, TY, W - 16, 5);
-  c.fillStyle = '#94a3b8'; c.fillRect(8, TY, W - 16, 2);
+  c.fillStyle = sf.rail; c.fillRect(8,TY,W-16,5);
+  c.fillStyle = 'rgba(255,255,255,0.25)'; c.fillRect(8,TY,W-16,2);
 
-  // Ties
-  for (let x = 14; x < W - 14; x += 26) {
-    c.fillStyle = '#92400e'; c.fillRect(x, TY + 4, 16, 10);
-    c.fillStyle = '#78350f'; c.fillRect(x, TY + 4, 16, 2);
+  // Ties (not on ice)
+  if (surface !== 'ice') {
+    const tc = sf.tieColor || '#92400e';
+    for (let x = 14; x < W-14; x += 26) {
+      c.fillStyle = tc; c.fillRect(x,TY+4,16,10);
+      c.fillStyle = 'rgba(0,0,0,0.15)'; c.fillRect(x,TY+4,16,2);
+    }
   }
 
-  // Ruler markers (auto step depending on current visible track length)
-  let step = 50;
-  if (trackCm > 600) step = 100;
-  if (trackCm > 1200) step = 200;
+  // Wind streaks when box is sliding and wind > 0
+  if (S.running && S.collided && S.box.v > 0.3 && S.windStrength > 0) {
+    const alpha = Math.min(S.windStrength / 10 * 0.7, 0.7);
+    c.globalAlpha = alpha;
+    c.strokeStyle = '#7dd3fc'; c.lineWidth = 1.5;
+    c.setLineDash([6,8]);
+    const bx = S.box.x + BOX_W;
+    for (let i = 0; i < 3; i++) {
+      const ly = TY - BOX_H * 0.3 - i * 9;
+      c.beginPath(); c.moveTo(bx+8+i*4,ly); c.lineTo(bx+28+i*4,ly); c.stroke();
+    }
+    c.setLineDash([]); c.globalAlpha = 1;
+  }
 
+  // Ruler markers (every 500 cm for 3000 cm track)
   c.textAlign = 'center';
-  for (let cm = 0; cm <= trackCm + 0.001; cm += step) {
-    const mx = cmToPx(cm);
-    if (mx > W - 8) break;
-    c.fillStyle = '#94a3b8';
-    c.font = '10px Nunito, sans-serif';
-    c.fillText(`${Math.round(cm)}`, mx, GY + 16);
-    c.fillStyle = '#cbd5e1';
-    c.fillRect(mx - 0.5, TY + 5, 1, 8);
+  for (let i = 0; i*500 <= 3000; i++) {
+    const mx = 8 + i*pxPerCm*500;
+    if (mx > W-8) break;
+    c.fillStyle = 'rgba(255,255,255,0.8)'; c.font = '10px Nunito,sans-serif';
+    c.fillText(`${i*500}`, mx, GY+16);
+    c.fillStyle = 'rgba(255,255,255,0.4)'; c.fillRect(mx-0.5,TY+5,1,8);
   }
-  c.fillStyle = '#94a3b8';
-  c.font = '10px Nunito, sans-serif';
-  c.textAlign = 'right';
-  c.fillText('cm', W - 4, GY + 16);
+  c.fillStyle = 'rgba(255,255,255,0.8)'; c.font = '10px Nunito,sans-serif';
+  c.textAlign = 'right'; c.fillText('cm', W-4, GY+16);
 
-  // Distance measurement line (collision point → current box position)
+  // Distance measurement line
   if (S.collided && S.boxDistCm > 0.05) {
-    const colPx  = cmToPx(S.boxStartCm) + BOX_W / 2;
-    const boxPx  = cmToPx(S.box.cmX)    + BOX_W / 2;
-    const lineY  = GY + 28;
-
-    c.setLineDash([4, 4]);
-    c.strokeStyle = '#f97316'; c.lineWidth = 2;
-    c.beginPath(); c.moveTo(colPx, lineY); c.lineTo(boxPx, lineY); c.stroke();
+    const colPx = S.boxStartX + BOX_W/2;
+    const boxPx = S.box.x    + BOX_W/2;
+    const lineY = GY + 28;
+    c.setLineDash([4,4]); c.strokeStyle='#f97316'; c.lineWidth=2;
+    c.beginPath(); c.moveTo(colPx,lineY); c.lineTo(boxPx,lineY); c.stroke();
     c.setLineDash([]);
-
-    [[colPx, lineY], [boxPx, lineY]].forEach(([lx, ly]) => {
-      c.strokeStyle = '#f97316'; c.lineWidth = 2;
-      c.beginPath(); c.moveTo(lx, ly - 5); c.lineTo(lx, ly + 5); c.stroke();
+    [[colPx,lineY],[boxPx,lineY]].forEach(([lx,ly])=>{
+      c.strokeStyle='#f97316'; c.lineWidth=2;
+      c.beginPath(); c.moveTo(lx,ly-5); c.lineTo(lx,ly+5); c.stroke();
     });
-
-    const midPx = (colPx + boxPx) / 2;
-    c.fillStyle = '#c2410c';
-    c.font = 'bold 12px Nunito, sans-serif';
-    c.textAlign = 'center';
-    c.fillText(`${S.boxDistCm.toFixed(1)} cm`, midPx, lineY - 6);
+    const midPx = (colPx+boxPx)/2;
+    c.fillStyle='#c2410c'; c.font='bold 12px Nunito,sans-serif'; c.textAlign='center';
+    c.fillText(`${S.boxDistCm.toFixed(1)} cm`, midPx, lineY-6);
   }
 
   // Sparks
   S.sparks.forEach(sp => {
-    c.beginPath();
-    c.arc(sp.x, sp.y, Math.max(0.1, sp.r * sp.life), 0, Math.PI * 2);
-    c.fillStyle = `rgba(${sp.col},${sp.life.toFixed(2)})`;
-    c.fill();
+    c.beginPath(); c.arc(sp.x,sp.y,Math.max(0.1,sp.r*sp.life),0,Math.PI*2);
+    c.fillStyle=`rgba(${sp.col},${sp.life.toFixed(2)})`; c.fill();
   });
 
-  // Objects (converted from cm to px)
-  drawCart(c, { ...S.cart, x: cmToPx(S.cart.cmX) }, TY);
-  drawBox(c,  { ...S.box,  x: cmToPx(S.box.cmX)  }, TY);
+  drawCart(c, S.cart, TY);
+  drawBox(c,  S.box,  TY);
 
-  // Velocity arrows while running
   if (S.running) {
-    const arrowScale = Math.min(pxPerCm * 1.2, 3);
-    if (Math.abs(S.cart.v) > 0.2)
-      drawArrow(c, cmToPx(S.cart.cmX) + CART_W/2, TY - CART_H - 14, S.cart.v, '#3b82f6', arrowScale);
-    if (Math.abs(S.box.v) > 0.2)
-      drawArrow(c, cmToPx(S.box.cmX)  + BOX_W/2,  TY - BOX_H  - 14, S.box.v,  '#f97316', arrowScale);
+    const arrowScale = Math.min(pxPerCm*1.2, 3);
+    if (Math.abs(S.cart.v) > 0.2) drawArrow(c, S.cart.x+CART_W/2, TY-CART_H-14, S.cart.v, '#3b82f6', arrowScale);
+    if (Math.abs(S.box.v)  > 0.2) drawArrow(c, S.box.x +BOX_W/2,  TY-BOX_H -14, S.box.v,  '#f97316', arrowScale);
   }
 }
 
 function drawCart(c, cart, TY) {
-  const { x, w, h } = cart;
-  const top = TY - h;
-
-  c.fillStyle = 'rgba(0,0,0,0.07)';
-  c.beginPath(); c.ellipse(x+w/2, TY+9, w/2-1, 4, 0, 0, Math.PI*2); c.fill();
-
-  c.fillStyle = '#3b82f6';
-  rr(c, x, top, w, h, 6); c.fill();
-  c.strokeStyle = '#1d4ed8'; c.lineWidth = 2;
-  rr(c, x, top, w, h, 6); c.stroke();
-
-  c.fillStyle = 'rgba(255,255,255,0.25)';
-  rr(c, x+3, top+3, w-6, h*0.36, 4); c.fill();
-
-  c.fillStyle = 'white';
-  c.font = 'bold 10px Nunito, sans-serif';
-  c.textAlign = 'center';
-  c.fillText(`${cart.m}g`, x+w/2, top+h/2+4);
-
-  [[x+10, TY+6],[x+w-10, TY+6]].forEach(([wx, wy]) => {
-    c.fillStyle = '#1e293b'; c.beginPath(); c.arc(wx,wy,6,0,Math.PI*2); c.fill();
-    c.strokeStyle = '#1d4ed8'; c.lineWidth = 1.5;
-    c.beginPath(); c.arc(wx,wy,6,0,Math.PI*2); c.stroke();
-    c.fillStyle = '#3b82f6'; c.beginPath(); c.arc(wx,wy,2,0,Math.PI*2); c.fill();
+  const {x,w,h} = cart; const top = TY-h;
+  c.fillStyle='rgba(0,0,0,0.07)';
+  c.beginPath(); c.ellipse(x+w/2,TY+9,w/2-1,4,0,0,Math.PI*2); c.fill();
+  c.fillStyle='#3b82f6'; rr(c,x,top,w,h,6); c.fill();
+  c.strokeStyle='#1d4ed8'; c.lineWidth=2; rr(c,x,top,w,h,6); c.stroke();
+  c.fillStyle='rgba(255,255,255,0.25)'; rr(c,x+3,top+3,w-6,h*0.36,4); c.fill();
+  c.fillStyle='white'; c.font='bold 10px Nunito,sans-serif'; c.textAlign='center';
+  c.fillText(`${cart.m}g`,x+w/2,top+h/2+4);
+  [[x+10,TY+6],[x+w-10,TY+6]].forEach(([wx,wy])=>{
+    c.fillStyle='#1e293b'; c.beginPath(); c.arc(wx,wy,6,0,Math.PI*2); c.fill();
+    c.strokeStyle='#1d4ed8'; c.lineWidth=1.5; c.beginPath(); c.arc(wx,wy,6,0,Math.PI*2); c.stroke();
+    c.fillStyle='#3b82f6'; c.beginPath(); c.arc(wx,wy,2,0,Math.PI*2); c.fill();
   });
 }
 
 function drawBox(c, box, TY) {
-  const { x, w, h } = box;
-  const top = TY - h;
-
-  c.fillStyle = 'rgba(0,0,0,0.07)';
-  c.beginPath(); c.ellipse(x+w/2, TY+8, w/2, 4, 0, 0, Math.PI*2); c.fill();
-
-  c.fillStyle = '#fb923c';
-  rr(c, x, top, w, h, 5); c.fill();
-  c.strokeStyle = '#c2410c'; c.lineWidth = 2;
-  rr(c, x, top, w, h, 5); c.stroke();
-
-  // lid line
-  c.strokeStyle = '#c2410c'; c.lineWidth = 1.2;
-  c.beginPath(); c.moveTo(x+3, top+h*0.28); c.lineTo(x+w-3, top+h*0.28); c.stroke();
-
-  // tape cross
-  c.strokeStyle = '#fbbf24'; c.lineWidth = 1.8;
-  c.beginPath(); c.moveTo(x+w/2, top+h*0.28); c.lineTo(x+w/2, top+h-3); c.stroke();
-  c.beginPath(); c.moveTo(x+3, top+h*0.6);   c.lineTo(x+w-3, top+h*0.6); c.stroke();
+  const {x,w,h} = box; const top = TY-h;
+  c.fillStyle='rgba(0,0,0,0.07)';
+  c.beginPath(); c.ellipse(x+w/2,TY+8,w/2,4,0,0,Math.PI*2); c.fill();
+  c.fillStyle='#fb923c'; rr(c,x,top,w,h,5); c.fill();
+  c.strokeStyle='#c2410c'; c.lineWidth=2; rr(c,x,top,w,h,5); c.stroke();
+  c.strokeStyle='#c2410c'; c.lineWidth=1.2;
+  c.beginPath(); c.moveTo(x+3,top+h*0.28); c.lineTo(x+w-3,top+h*0.28); c.stroke();
+  c.strokeStyle='#fbbf24'; c.lineWidth=1.8;
+  c.beginPath(); c.moveTo(x+w/2,top+h*0.28); c.lineTo(x+w/2,top+h-3); c.stroke();
+  c.beginPath(); c.moveTo(x+3,top+h*0.6); c.lineTo(x+w-3,top+h*0.6); c.stroke();
 }
 
-function drawArrow(c, cx, ay, vel, color, scale) {
-  if (Math.abs(vel) < 0.3) return;
-  const len = Math.min(Math.abs(vel) * scale * 1.2, 40);
-  const d   = Math.sign(vel);
-  const ex  = cx + d * len;
-
-  c.strokeStyle = color; c.lineWidth = 2; c.lineCap = 'round';
-  c.beginPath(); c.moveTo(cx, ay); c.lineTo(ex, ay); c.stroke();
-
-  c.fillStyle = color;
-  c.beginPath(); c.moveTo(ex, ay); c.lineTo(ex-d*6, ay-3); c.lineTo(ex-d*6, ay+3); c.closePath(); c.fill();
-
-  c.fillStyle = color;
-  c.font = 'bold 9px Nunito, sans-serif';
-  c.textAlign = 'center';
-  c.fillText(`${Math.abs(vel).toFixed(1)}`, ex, ay-6);
+function drawArrow(c,cx,ay,vel,color,scale) {
+  if (Math.abs(vel)<0.3) return;
+  const len=Math.min(Math.abs(vel)*scale*1.2,40), d=Math.sign(vel), ex=cx+d*len;
+  c.strokeStyle=color; c.lineWidth=2; c.lineCap='round';
+  c.beginPath(); c.moveTo(cx,ay); c.lineTo(ex,ay); c.stroke();
+  c.fillStyle=color;
+  c.beginPath(); c.moveTo(ex,ay); c.lineTo(ex-d*6,ay-3); c.lineTo(ex-d*6,ay+3); c.closePath(); c.fill();
+  c.fillStyle=color; c.font='bold 9px Nunito,sans-serif'; c.textAlign='center';
+  c.fillText(`${Math.abs(vel).toFixed(1)}`,ex,ay-6);
 }
 
-function rr(c, x, y, w, h, r) {
-  c.beginPath();
-  c.moveTo(x+r, y);
-  c.lineTo(x+w-r, y); c.arcTo(x+w, y, x+w, y+r, r);
-  c.lineTo(x+w, y+h-r); c.arcTo(x+w, y+h, x+w-r, y+h, r);
-  c.lineTo(x+r, y+h); c.arcTo(x, y+h, x, y+h-r, r);
-  c.lineTo(x, y+r); c.arcTo(x, y, x+r, y, r);
-  c.closePath();
+function rr(c,x,y,w,h,r) {
+  c.beginPath(); c.moveTo(x+r,y);
+  c.lineTo(x+w-r,y); c.arcTo(x+w,y,x+w,y+r,r);
+  c.lineTo(x+w,y+h-r); c.arcTo(x+w,y+h,x+w-r,y+h,r);
+  c.lineTo(x+r,y+h); c.arcTo(x,y+h,x,y+h-r,r);
+  c.lineTo(x,y+r); c.arcTo(x,y,x+r,y,r); c.closePath();
 }
 
-// ── SPARKS ────────────────────────────────────────────────
-function spawnSparks(x, y) {
-  for (let i = 0; i < 20; i++) {
-    const a  = Math.random() * Math.PI * 2;
-    const sp = 2 + Math.random() * 4;
-    S.sparks.push({
-      x, y, vx: Math.cos(a)*sp, vy: Math.sin(a)*sp-3,
-      r: 3+Math.random()*3, life:1,
-      col: Math.random()>.5 ? '255,200,0' : '255,100,30'
-    });
+function spawnSparks(x,y) {
+  for (let i=0;i<20;i++) {
+    const a=Math.random()*Math.PI*2, sp=2+Math.random()*4;
+    S.sparks.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-3,r:3+Math.random()*3,life:1,
+      col:Math.random()>.5?'255,200,0':'255,100,30'});
   }
 }
 
-// ── GAME LOOP ──────────────────────────────────────────────
+// ── GAME LOOP ─────────────────────────────────────────────
 function gameLoop(ts) {
   if (!S.running) return;
   if (!S.lastTime) S.lastTime = ts;
-  const dt = Math.min((ts - S.lastTime) / 1000, 0.05);
+  const dt = Math.min((ts-S.lastTime)/1000, 0.05);
   S.lastTime = ts;
 
-  // Keep pxPerCm synced with track length (for smooth "track getting bigger")
-  S.pxPerCm = (S.W - 16) / S.trackCm;
-
   if (!S.collided) {
-    // Cart rolling toward box — in cm space: v * dt * 80
-    S.cart.cmX += S.cart.v * dt * 60;
-
-    // Collision detection (in cm space)
-    if (S.cart.cmX + cartWidthCm() >= S.box.cmX) {
-      S.cart.cmX     = S.box.cmX - cartWidthCm();
-      S.boxStartCm   = S.box.cmX;
-      S.boxDistCm    = 0;
-      S.collided     = true;
-      S.collisionTime = ts;
-
-      doCollision();
-      onCollision();
-
-      // Ensure track can eventually show the full travel (will animate larger if needed)
-      const needed = S.boxStartCm + S.targetDistCm + 60; // small margin
-      if (needed > S.trackCm) S.trackCm = Math.max(S.trackCm, TRACK_START_CM);
+    S.cart.x += S.cart.v * S.pxPerCm * dt * 80;
+    if (S.cart.x + CART_W >= S.box.x) {
+      S.cart.x = S.box.x - CART_W;
+      S.boxStartX = S.box.x; S.boxDistCm = 0; S.collided = true;
+      doCollision(); onCollision();
     }
   } else {
-    // Expand track smoothly if box travel needs more than currently visible
-    const needed = S.boxStartCm + S.targetDistCm + 60;
-    if (needed > S.trackCm) {
-      // Smooth approach (zoom out) — rate scaled by dt
-      S.trackCm += (needed - S.trackCm) * Math.min(1, dt * 1.8);
-      if (S.trackCm > needed) S.trackCm = needed;
-      S.pxPerCm = (S.W - 16) / S.trackCm;
-    }
-
-    // Wait 1 second before moving the box
-    if (ts - S.collisionTime >= S.delayAfterCollision) {
-      const targetCm  = S.boxStartCm + S.targetDistCm;
-      const remaining = targetCm - S.box.cmX;
-
-      if (remaining > 0.05) {
-        const minStepCm = 0.3 / S.pxPerCm; // match old 0.3px minimum step
-        const stepCm = Math.max(remaining * 4 * dt, minStepCm);
-        const move = Math.min(stepCm, remaining);
-        S.box.cmX += move;
-
-        // pseudo-velocity in the same "units" as cart.v
-        // cart cm speed = v*60 => v = (cm/s)/60
-        S.box.v = (move / Math.max(dt, 1e-6)) / 60;
-      } else {
-        S.box.cmX = targetCm;
-        S.box.v = 0;
-      }
-
-      // Update live distance counter
-      S.boxDistCm = S.box.cmX - S.boxStartCm;
-      if (S.boxDistCm < 0) S.boxDistCm = 0;
-      document.getElementById('dh-dist').textContent = S.boxDistCm.toFixed(1) + ' cm';
+    const targetPx  = S.boxStartX + S.targetDistCm * S.pxPerCm;
+    const remaining = targetPx - S.box.x;
+    if (remaining > 0.5) {
+      const step = Math.max(remaining*4*dt, 0.3);
+      S.box.x += Math.min(step, remaining);
+      S.box.v  = remaining / S.pxPerCm;
     } else {
-      // During the 1s wait, show box as "not moving"
-      S.box.v = 0;
-      S.boxDistCm = 0;
-      document.getElementById('dh-dist').textContent = '0.0 cm';
+      S.box.x = targetPx; S.box.v = 0;
     }
+    S.boxDistCm = Math.max(0, (S.box.x - S.boxStartX) / S.pxPerCm);
+    document.getElementById('dh-dist').textContent = S.boxDistCm.toFixed(1) + ' cm';
   }
 
-  // Sparks decay
-  S.sparks = S.sparks.filter(sp => sp.life > 0.04);
-  S.sparks.forEach(sp => { sp.x+=sp.vx; sp.y+=sp.vy; sp.vy+=0.2; sp.life*=0.88; });
+  S.sparks = S.sparks.filter(sp=>sp.life>0.04);
+  S.sparks.forEach(sp=>{sp.x+=sp.vx;sp.y+=sp.vy;sp.vy+=0.2;sp.life*=0.88;});
 
-  updateLive();
-  drawFrame();
+  updateLive(); drawFrame();
   requestAnimationFrame(gameLoop);
 }
 
-// ── COLLISION EVENT ────────────────────────────────────────
+// ── COLLISION EVENT ───────────────────────────────────────
 function onCollision() {
-  const fl = document.getElementById('flash-overlay');
-  fl.classList.add('active');
-  setTimeout(() => fl.classList.remove('active'), 350);
+  document.getElementById('flash-overlay').classList.add('active');
+  setTimeout(()=>document.getElementById('flash-overlay').classList.remove('active'),350);
+  spawnSparks(S.box.x+2, S.H*TY_R-18);
 
-  // Sparks at collision point (pixel space)
-  spawnSparks(cmToPx(S.box.cmX) + 2, S.H * TY_R - 18);
-
-  // Show results immediately
   const card = document.getElementById('results-card');
   card.style.display = 'block';
+  setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'nearest'}),120);
 
-  // Scroll down AFTER 1 second (as requested)
-  setTimeout(() => card.scrollIntoView({ behavior:'smooth', block:'nearest' }), 1000);
-
-  document.getElementById('rb-before-cart').textContent =
-    `Before: ${S.vcInit.toFixed(0)} (moving right)`;
+  const sf = SURFACES[S.surface];
+  document.getElementById('rb-before-cart').textContent = `Before: ${S.vcInit.toFixed(0)} (moving right)`;
   document.getElementById('rb-after-cart').textContent  = 'stopped';
-  document.getElementById('rb-after-box').textContent   = `moving right`;
-
-  document.getElementById('dh-dist').textContent = '0.0 cm';
-  document.getElementById('dh-sub').textContent  = 'Measured from where the crash happened';
+  document.getElementById('rb-after-box').textContent   = 'moving right';
+  document.getElementById('dh-dist').textContent        = '0.0 cm';
+  document.getElementById('dh-sub').textContent         =
+    `${sf.label} surface${S.windStrength>0?' · Wind level '+S.windStrength:''} — from crash point`;
 }
 
-// ── LIVE READOUT ──────────────────────────────────────────
 function updateLive() {
-  const { cart, box, collided } = S;
   document.getElementById('live-cart').textContent =
-    Math.abs(cart.v) < 0.1 ? 'stopped' : Math.abs(cart.v).toFixed(1);
-
-  if (Math.abs(box.v) < 0.1) {
-    document.getElementById('live-box').textContent = collided ? 'stopped' : 'not moving';
-  } else {
-    document.getElementById('live-box').textContent = Math.abs(box.v).toFixed(1);
-  }
+    Math.abs(S.cart.v)<0.1 ? 'stopped' : Math.abs(S.cart.v).toFixed(1);
+  document.getElementById('live-box').textContent =
+    Math.abs(S.box.v)<0.1 ? (S.collided?'stopped':'not moving') : Math.abs(S.box.v).toFixed(1);
 }
 
-// ── CONTROLS ──────────────────────────────────────────────
+// ── CONTROLS ─────────────────────────────────────────────
 function readControls() {
-  S.cart.m = +document.getElementById('mc').value;
-  S.cart.v = +document.getElementById('vc').value;
-  S.box.v  = 0;
+  S.cart.m      = +document.getElementById('mc').value;
+  S.cart.v      = +document.getElementById('vc').value;
+  S.windStrength = +document.getElementById('wind').value;
+  S.box.v       = 0;
 }
 
-document.getElementById('btn-launch').addEventListener('click', () => {
+document.getElementById('btn-launch').addEventListener('click', ()=>{
   if (S.running) return;
-  readControls();
-
-  // Reset track to the starting 400cm view for each run
-  S.trackCm = TRACK_START_CM;
-
-  resize(); // recalculates pxPerCm based on trackCm
-
-  S.collided     = false;
-  S.vcAfter      = S.vbAfter = null;
-  S.lastTime     = null;
-  S.sparks       = [];
-  S.running      = true;
-  S.vcInit       = S.cart.v;
-  S.boxDistCm    = 0;
-  S.targetDistCm = 0;
-  S.collisionTime = null;
-
-  document.getElementById('results-card').style.display = 'none';
-  updateLive();
-  requestAnimationFrame(gameLoop);
+  readControls(); resetPositions();
+  S.collided=false; S.vcAfter=S.vbAfter=null; S.lastTime=null; S.sparks=[];
+  S.running=true; S.vcInit=S.cart.v; S.boxDistCm=0; S.targetDistCm=0;
+  document.getElementById('results-card').style.display='none';
+  updateLive(); requestAnimationFrame(gameLoop);
 });
 
-document.getElementById('btn-reset').addEventListener('click', () => {
-  S.running      = false;
-  S.collided     = false;
-  S.sparks       = [];
-  S.boxDistCm    = 0;
-  S.targetDistCm = 0;
-  S.collisionTime = null;
-
-  // Reset track view
-  S.trackCm = TRACK_START_CM;
-
-  readControls();
-  resize();
-  document.getElementById('results-card').style.display = 'none';
-  updateLive();
-  drawFrame();
+document.getElementById('btn-reset').addEventListener('click', ()=>{
+  S.running=false; S.collided=false; S.sparks=[]; S.boxDistCm=0; S.targetDistCm=0;
+  readControls(); resetPositions();
+  document.getElementById('results-card').style.display='none';
+  updateLive(); drawFrame();
 });
 
-canvas.addEventListener('click', () => {
-  if (S.running) {
-    S.running = false;
-  } else if (!S.collided) {
-    S.lastTime = null;
-    S.running  = true;
-    requestAnimationFrame(gameLoop);
-  }
+canvas.addEventListener('click', ()=>{
+  if (S.running) { S.running=false; }
+  else if (!S.collided) { S.lastTime=null; S.running=true; requestAnimationFrame(gameLoop); }
 });
 
-document.getElementById('mc').addEventListener('input', e => {
-  document.getElementById('mc-badge').textContent = e.target.value + ' g';
-  S.cart.m = +e.target.value;
-  if (!S.running) drawFrame();
+document.getElementById('mc').addEventListener('input', e=>{
+  document.getElementById('mc-badge').textContent = e.target.value+' g';
+  S.cart.m = +e.target.value; if (!S.running) drawFrame();
 });
-
-document.getElementById('vc').addEventListener('input', e => {
+document.getElementById('vc').addEventListener('input', e=>{
   document.getElementById('vc-badge').textContent = e.target.value;
-  S.cart.v = +e.target.value;
-  if (!S.running) { updateLive(); drawFrame(); }
-});</script>
+  S.cart.v = +e.target.value; if (!S.running) { updateLive(); drawFrame(); }
+});
+document.getElementById('wind').addEventListener('input', e=>{
+  document.getElementById('wind-badge').textContent = e.target.value;
+  S.windStrength = +e.target.value;
+});
+document.querySelectorAll('.surf-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.surf-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    S.surface = btn.dataset.surface;
+    if (!S.running) drawFrame();
+  });
+});
+</script>
 </body>
 </html>

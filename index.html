@@ -7,22 +7,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #f0f4ff;
-    --white: #fff;
-    --blue: #3b82f6;
-    --blue-light: #dbeafe;
-    --blue-dark: #1d4ed8;
-    --orange: #f97316;
-    --orange-light: #ffedd5;
-    --green: #22c55e;
-    --green-light: #dcfce7;
-    --yellow: #eab308;
-    --yellow-light: #fef9c3;
-    --gray: #64748b;
-    --gray-light: #f1f5f9;
-    --border: #e2e8f0;
-    --text: #1e293b;
-    --text-soft: #475569;
+    --bg: #f0f4ff; --white: #fff; --blue: #3b82f6; --blue-light: #dbeafe;
+    --blue-dark: #1d4ed8; --orange: #f97316; --orange-light: #ffedd5;
+    --green: #22c55e; --green-light: #dcfce7; --yellow: #eab308;
+    --yellow-light: #fef9c3; --gray: #64748b; --gray-light: #f1f5f9;
+    --border: #e2e8f0; --text: #1e293b; --text-soft: #475569;
     --shadow: 0 2px 14px rgba(0,0,0,0.09);
   }
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -36,11 +25,9 @@
   .card { background:var(--white); border-radius:20px; box-shadow:var(--shadow); padding:20px; margin-bottom:16px; }
   .card-title { font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray); margin-bottom:14px; }
 
-  /* TRACK */
   #track-canvas { width:100%; height:210px; border-radius:14px; border:2px solid var(--border); display:block; cursor:pointer; }
   .track-hint { text-align:center; font-size:12px; color:var(--gray); margin-top:6px; }
 
-  /* live chips */
   .live-row { display:flex; gap:10px; margin-top:10px; }
   .live-chip { flex:1; border-radius:12px; padding:10px 14px; text-align:center; }
   .live-chip.blue  { background:var(--blue-light); }
@@ -50,19 +37,22 @@
   .live-chip.amber .lc-val { color:#c2410c; }
   .live-chip .lc-label { font-size:11px; font-weight:600; color:var(--text-soft); }
 
-  /* SETUP */
+  /* track length display */
+  .track-length-row { display:flex; justify-content:flex-end; align-items:center; gap:6px; margin-top:6px; font-size:12px; color:var(--gray); }
+  .track-length-val { font-weight:800; color:var(--blue-dark); }
+
   .setup-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
   .setup-box { border-radius:16px; padding:16px; }
-  .setup-box.cart-box { background:var(--blue-light);  border:2px solid var(--blue); }
-  .setup-box.wind-box { background:#f0fdf4;             border:2px solid var(--green); }
+  .setup-box.cart-box { background:var(--blue-light); border:2px solid var(--blue); }
+  .setup-box.wind-box { background:#f0fdf4; border:2px solid var(--green); }
   .setup-box h3 { font-size:16px; font-weight:800; margin-bottom:14px; }
-  .cart-box h3  { color:var(--blue-dark); }
-  .wind-box h3  { color:#15803d; }
+  .cart-box h3 { color:var(--blue-dark); }
+  .wind-box h3 { color:#15803d; }
 
   .ctrl-row { margin-bottom:14px; }
   .ctrl-label { display:flex; justify-content:space-between; align-items:center; font-size:14px; font-weight:700; margin-bottom:6px; }
   .val-badge { font-size:13px; font-weight:800; padding:2px 10px; border-radius:20px; min-width:50px; text-align:center; }
-  .cart-box .val-badge { background:var(--blue);  color:white; }
+  .cart-box .val-badge { background:var(--blue); color:white; }
   .wind-box .val-badge { background:var(--green); color:white; }
 
   input[type="range"] { width:100%; height:6px; -webkit-appearance:none; border-radius:6px; outline:none; cursor:pointer; }
@@ -77,12 +67,10 @@
     background:var(--green); border:3px solid white; box-shadow:0 2px 6px rgba(34,197,94,.4); cursor:pointer;
   }
 
-  /* SURFACE PICKER */
   .surface-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
   .surf-btn {
     border-radius:14px; border:2px solid var(--border); background:var(--gray-light);
-    padding:12px 8px; text-align:center; cursor:pointer; transition:all .15s;
-    font-family:'Nunito',sans-serif;
+    padding:12px 8px; text-align:center; cursor:pointer; transition:all .15s; font-family:'Nunito',sans-serif;
   }
   .surf-btn.active { border-color:var(--blue); background:var(--blue-light); }
   .surf-swatch { width:100%; height:28px; border-radius:8px; margin-bottom:8px; }
@@ -90,7 +78,6 @@
   .surf-mu   { font-size:11px; color:var(--text-soft); display:block; margin-top:2px; }
   .surf-desc { font-size:10px; color:var(--text-soft); display:block; margin-top:3px; line-height:1.4; }
 
-  /* BUTTONS */
   .action-row { display:flex; gap:12px; justify-content:center; }
   .btn-launch {
     padding:14px 44px; border-radius:14px; border:none; background:var(--blue); color:white;
@@ -104,7 +91,6 @@
   }
   .btn-reset:hover { border-color:var(--blue); color:var(--blue); }
 
-  /* RESULTS */
   #results-card { display:none; animation:popIn .4s cubic-bezier(.34,1.56,.64,1); }
   @keyframes popIn { from{opacity:0;transform:scale(.92)} to{opacity:1;transform:scale(1)} }
 
@@ -149,10 +135,9 @@
 
   <header>
     <h1>Cart Simulation</h1>
-    <p>v</p>
+    <p>Explore how surface friction and wind resistance affect how far the box travels.</p>
   </header>
 
-  <!-- TRACK -->
   <div class="card">
     <div class="card-title">Track</div>
     <canvas id="track-canvas"></canvas>
@@ -166,10 +151,12 @@
         <span class="lc-label">Box speed</span>
       </div>
     </div>
+    <div class="track-length-row">
+      Track length: <span class="track-length-val" id="track-length-display">400 cm</span>
+    </div>
     <p class="track-hint">Click the track to pause / resume</p>
   </div>
 
-  <!-- SETUP -->
   <div class="card">
     <div class="card-title">Set Up the Experiment</div>
     <div class="setup-grid">
@@ -185,7 +172,6 @@
         </div>
         <p style="font-size:12px;color:var(--text-soft);margin-top:2px">Always rolls right toward the box.</p>
       </div>
-
       <div class="setup-box wind-box">
         <h3>Wind Resistance</h3>
         <div class="ctrl-row">
@@ -199,7 +185,6 @@
     </div>
   </div>
 
-  <!-- SURFACE -->
   <div class="card">
     <div class="card-title">Surface Type — affects friction</div>
     <div class="surface-grid">
@@ -230,7 +215,6 @@
     </div>
   </div>
 
-  <!-- LAUNCH -->
   <div class="card">
     <div class="action-row">
       <button class="btn-launch" id="btn-launch">Launch Cart</button>
@@ -238,7 +222,6 @@
     </div>
   </div>
 
-  <!-- RESULTS -->
   <div class="card" id="results-card">
     <div class="card-title">What happened in the crash?</div>
     <div class="results-grid">
@@ -255,7 +238,6 @@
         <div class="rb-after" id="rb-after-box">—</div>
       </div>
     </div>
-
     <div class="distance-highlight">
       <div class="dh-num" id="dh-dist">— cm</div>
       <div class="dh-text">
@@ -267,9 +249,6 @@
 
 </div>
 <script>
-// ── SURFACES ─────────────────────────────────────────────
-// mu scales the base distance: higher mu = slides farther (less friction slows it)
-// ice has almost no friction, carpet has a lot
 const SURFACES = {
   ice:      { mu:1.8,  label:'Ice',      rail:'#bae6fd', ground1:'#e0f2fe', ground2:'#7dd3fc', tieColor:null },
   wood:     { mu:1.0,  label:'Wood',     rail:'#92400e', ground1:'#d97706', ground2:'#b45309', tieColor:'#78350f' },
@@ -277,17 +256,17 @@ const SURFACES = {
   carpet:   { mu:0.22, label:'Carpet',   rail:'#4c1d95', ground1:'#7c3aed', ground2:'#5b21b6', tieColor:'#3b0764' },
 };
 
-// ── STATE ─────────────────────────────────────────────────
 const canvas = document.getElementById('track-canvas');
 const ctx    = canvas.getContext('2d');
 
 const CART_W = 48, CART_H = 32;
 const BOX_W  = 36, BOX_H  = 40;
 const TY_R   = 0.58;
-
-// Calibrated base constant from original sim: d = K_BASE * mu * m * v²
-// wind reduces distance: windFactor = 1 / (1 + wind * 0.15)
 const K_BASE = 0.025;
+
+// Track starts at 400 cm and grows up to 3000 cm
+const TRACK_MIN = 400;
+const TRACK_MAX = 3000;
 
 let S = {
   running:false, collided:false, lastTime:null, sparks:[],
@@ -296,12 +275,12 @@ let S = {
   vcInit:10, vcAfter:null, vbAfter:null,
   boxStartX:0, boxDistCm:0, targetDistCm:0,
   surface:'ice', windStrength:0,
+  trackCm: TRACK_MIN,   // current track length — starts at 400, grows as needed
   W:0, H:0, pxPerCm:1
 };
 
-// ── PHYSICS ───────────────────────────────────────────────
 function calcDistance(m, v, surface, wind) {
-  const mu         = SURFACES[surface].mu;
+  const mu = SURFACES[surface].mu;
   const windFactor = 1 / (1 + wind * 0.15);
   return K_BASE * mu * m * v * v * windFactor;
 }
@@ -309,19 +288,35 @@ function calcDistance(m, v, surface, wind) {
 function doCollision() {
   S.vcAfter      = 0;
   S.cart.v       = 0;
-  S.vbAfter      = S.cart.v; // already 0, just for record
+  S.vbAfter      = 0;
   S.targetDistCm = calcDistance(S.cart.m, S.vcInit, S.surface, S.windStrength);
+
+  // Expand track NOW so the box always fits within the visible track
+  const boxStartCm   = (S.boxStartX - 8) / S.pxPerCm;
+  const neededCm     = boxStartCm + S.targetDistCm + 50; // 50 cm breathing room
+  const newTrack     = Math.min(Math.max(S.trackCm, Math.ceil(neededCm / 100) * 100), TRACK_MAX);
+  if (newTrack !== S.trackCm) {
+    S.trackCm  = newTrack;
+    // Recompute pxPerCm with new track length (canvas size unchanged)
+    S.pxPerCm  = (S.W - 16) / S.trackCm;
+    // Reposition objects in pixel space to match new scale
+    // cart is at collision point (fixed), box is at boxStartX
+    // We need to convert current cm positions to new pixel positions
+    // cart cm position:
+    const cartCm    = (S.cart.x - 8) / ((S.W - 16) / (newTrack === S.trackCm ? S.trackCm : newTrack));
+    // Easier: convert using old pxPerCm before we overwrote it — so do it before
+  }
 }
 
 // ── RESIZE ────────────────────────────────────────────────
 function resize() {
   const rect = canvas.getBoundingClientRect();
   const dpr  = window.devicePixelRatio || 1;
-  canvas.width  = rect.width  * dpr;
+  canvas.width  = rect.width * dpr;
   canvas.height = rect.height * dpr;
   ctx.scale(dpr, dpr);
   S.W = rect.width; S.H = rect.height;
-  S.pxPerCm = (S.W - 16) / 3000;
+  S.pxPerCm = (S.W - 16) / S.trackCm;
   if (!S.running) resetPositions();
   drawFrame();
 }
@@ -329,16 +324,23 @@ window.addEventListener('resize', resize);
 setTimeout(resize, 60);
 
 function resetPositions() {
+  S.trackCm = TRACK_MIN;
+  S.pxPerCm = (S.W - 16) / S.trackCm;
   S.cart.x = 8 + S.pxPerCm * 10;
-  S.box.x  = 8 + S.pxPerCm * 200;
+  S.box.x  = 8 + S.pxPerCm * 100;
   S.cart.v = +document.getElementById('vc').value;
   S.box.v  = 0;
   S.boxDistCm = 0;
+  updateTrackDisplay();
+}
+
+function updateTrackDisplay() {
+  document.getElementById('track-length-display').textContent = S.trackCm + ' cm';
 }
 
 // ── DRAW ──────────────────────────────────────────────────
 function drawFrame() {
-  const { W, H, pxPerCm, surface } = S;
+  const { W, H, pxPerCm, surface, trackCm } = S;
   const TY = H * TY_R;
   const GY = H * 0.67;
   const c  = ctx;
@@ -351,7 +353,7 @@ function drawFrame() {
   sky.addColorStop(0,'#dbeafe'); sky.addColorStop(1,'#f0f9ff');
   c.fillStyle = sky; c.fillRect(0,0,W,GY);
 
-  // Ground — color reflects surface
+  // Ground
   const grd = c.createLinearGradient(0,GY,0,H);
   grd.addColorStop(0, sf.ground1); grd.addColorStop(1, sf.ground2);
   c.fillStyle = grd; c.fillRect(0,GY,W,H-GY);
@@ -360,73 +362,72 @@ function drawFrame() {
   if (surface === 'carpet') {
     c.globalAlpha = 0.22;
     for (let x = 0; x < W; x += 4) {
-      c.strokeStyle = '#a78bfa'; c.lineWidth = 1;
+      c.strokeStyle='#a78bfa'; c.lineWidth=1;
       c.beginPath(); c.moveTo(x,GY); c.lineTo(x,H); c.stroke();
     }
     c.globalAlpha = 1;
   } else if (surface === 'concrete') {
-    c.globalAlpha = 0.15;
-    c.strokeStyle = '#1e293b'; c.lineWidth = 1;
+    c.globalAlpha = 0.15; c.strokeStyle='#1e293b'; c.lineWidth=1;
     for (let x = 0; x < W; x += 40) { c.beginPath(); c.moveTo(x,GY); c.lineTo(x,H); c.stroke(); }
     for (let y = GY+10; y < H; y += 18) { c.beginPath(); c.moveTo(0,y); c.lineTo(W,y); c.stroke(); }
     c.globalAlpha = 1;
   } else if (surface === 'ice') {
-    c.globalAlpha = 0.3;
-    c.fillStyle = 'white';
+    c.globalAlpha = 0.3; c.fillStyle='white';
     for (let x = 10; x < W; x += 60) {
-      c.beginPath();
-      c.moveTo(x,GY+2); c.lineTo(x+30,GY+2); c.lineTo(x+28,GY+7); c.lineTo(x+2,GY+7);
-      c.closePath(); c.fill();
+      c.beginPath(); c.moveTo(x,GY+2); c.lineTo(x+30,GY+2); c.lineTo(x+28,GY+7); c.lineTo(x+2,GY+7); c.closePath(); c.fill();
     }
     c.globalAlpha = 1;
   } else if (surface === 'wood') {
-    c.globalAlpha = 0.15;
-    c.strokeStyle = '#78350f'; c.lineWidth = 1;
+    c.globalAlpha = 0.15; c.strokeStyle='#78350f'; c.lineWidth=1;
     for (let x = 0; x < W; x += 30) { c.beginPath(); c.moveTo(x,GY); c.lineTo(x,H); c.stroke(); }
     c.globalAlpha = 1;
   }
 
-  // Ground top edge
   c.fillStyle = sf.ground1; c.fillRect(0,GY,W,3);
 
   // Rail
   c.fillStyle = sf.rail; c.fillRect(8,TY,W-16,5);
   c.fillStyle = 'rgba(255,255,255,0.25)'; c.fillRect(8,TY,W-16,2);
 
-  // Ties (not on ice)
+  // Ties
   if (surface !== 'ice') {
     const tc = sf.tieColor || '#92400e';
     for (let x = 14; x < W-14; x += 26) {
-      c.fillStyle = tc; c.fillRect(x,TY+4,16,10);
-      c.fillStyle = 'rgba(0,0,0,0.15)'; c.fillRect(x,TY+4,16,2);
+      c.fillStyle=tc; c.fillRect(x,TY+4,16,10);
+      c.fillStyle='rgba(0,0,0,0.15)'; c.fillRect(x,TY+4,16,2);
     }
   }
 
-  // Wind streaks when box is sliding and wind > 0
+  // Wind streaks
   if (S.running && S.collided && S.box.v > 0.3 && S.windStrength > 0) {
-    const alpha = Math.min(S.windStrength / 10 * 0.7, 0.7);
-    c.globalAlpha = alpha;
-    c.strokeStyle = '#7dd3fc'; c.lineWidth = 1.5;
+    const alpha = Math.min(S.windStrength/10*0.7, 0.7);
+    c.globalAlpha = alpha; c.strokeStyle='#7dd3fc'; c.lineWidth=1.5;
     c.setLineDash([6,8]);
     const bx = S.box.x + BOX_W;
     for (let i = 0; i < 3; i++) {
-      const ly = TY - BOX_H * 0.3 - i * 9;
+      const ly = TY - BOX_H*0.3 - i*9;
       c.beginPath(); c.moveTo(bx+8+i*4,ly); c.lineTo(bx+28+i*4,ly); c.stroke();
     }
-    c.setLineDash([]); c.globalAlpha = 1;
+    c.setLineDash([]); c.globalAlpha=1;
   }
 
-  // Ruler markers (every 500 cm for 3000 cm track)
-  c.textAlign = 'center';
-  for (let i = 0; i*500 <= 3000; i++) {
-    const mx = 8 + i*pxPerCm*500;
-    if (mx > W-8) break;
-    c.fillStyle = 'rgba(255,255,255,0.8)'; c.font = '10px Nunito,sans-serif';
-    c.fillText(`${i*500}`, mx, GY+16);
-    c.fillStyle = 'rgba(255,255,255,0.4)'; c.fillRect(mx-0.5,TY+5,1,8);
+  // Ruler — pick a nice interval based on track length
+  const intervals = [50,100,200,500,1000];
+  let interval = 50;
+  for (const iv of intervals) {
+    if (trackCm / iv <= 10) { interval = iv; break; }
+    interval = iv;
   }
-  c.fillStyle = 'rgba(255,255,255,0.8)'; c.font = '10px Nunito,sans-serif';
-  c.textAlign = 'right'; c.fillText('cm', W-4, GY+16);
+  c.textAlign='center';
+  for (let i = 0; i*interval <= trackCm; i++) {
+    const mx = 8 + i*pxPerCm*interval;
+    if (mx > W-4) break;
+    c.fillStyle='rgba(255,255,255,0.85)'; c.font='10px Nunito,sans-serif';
+    c.fillText(`${i*interval}`, mx, GY+16);
+    c.fillStyle='rgba(255,255,255,0.4)'; c.fillRect(mx-0.5,TY+5,1,8);
+  }
+  c.fillStyle='rgba(255,255,255,0.85)'; c.font='10px Nunito,sans-serif';
+  c.textAlign='right'; c.fillText('cm', W-4, GY+16);
 
   // Distance measurement line
   if (S.collided && S.boxDistCm > 0.05) {
@@ -440,13 +441,13 @@ function drawFrame() {
       c.strokeStyle='#f97316'; c.lineWidth=2;
       c.beginPath(); c.moveTo(lx,ly-5); c.lineTo(lx,ly+5); c.stroke();
     });
-    const midPx = (colPx+boxPx)/2;
+    const midPx=(colPx+boxPx)/2;
     c.fillStyle='#c2410c'; c.font='bold 12px Nunito,sans-serif'; c.textAlign='center';
     c.fillText(`${S.boxDistCm.toFixed(1)} cm`, midPx, lineY-6);
   }
 
   // Sparks
-  S.sparks.forEach(sp => {
+  S.sparks.forEach(sp=>{
     c.beginPath(); c.arc(sp.x,sp.y,Math.max(0.1,sp.r*sp.life),0,Math.PI*2);
     c.fillStyle=`rgba(${sp.col},${sp.life.toFixed(2)})`; c.fill();
   });
@@ -456,13 +457,13 @@ function drawFrame() {
 
   if (S.running) {
     const arrowScale = Math.min(pxPerCm*1.2, 3);
-    if (Math.abs(S.cart.v) > 0.2) drawArrow(c, S.cart.x+CART_W/2, TY-CART_H-14, S.cart.v, '#3b82f6', arrowScale);
-    if (Math.abs(S.box.v)  > 0.2) drawArrow(c, S.box.x +BOX_W/2,  TY-BOX_H -14, S.box.v,  '#f97316', arrowScale);
+    if (Math.abs(S.cart.v)>0.2) drawArrow(c, S.cart.x+CART_W/2, TY-CART_H-14, S.cart.v, '#3b82f6', arrowScale);
+    if (Math.abs(S.box.v) >0.2) drawArrow(c, S.box.x +BOX_W/2,  TY-BOX_H -14, S.box.v,  '#f97316', arrowScale);
   }
 }
 
 function drawCart(c, cart, TY) {
-  const {x,w,h} = cart; const top = TY-h;
+  const {x,w,h}=cart; const top=TY-h;
   c.fillStyle='rgba(0,0,0,0.07)';
   c.beginPath(); c.ellipse(x+w/2,TY+9,w/2-1,4,0,0,Math.PI*2); c.fill();
   c.fillStyle='#3b82f6'; rr(c,x,top,w,h,6); c.fill();
@@ -478,7 +479,7 @@ function drawCart(c, cart, TY) {
 }
 
 function drawBox(c, box, TY) {
-  const {x,w,h} = box; const top = TY-h;
+  const {x,w,h}=box; const top=TY-h;
   c.fillStyle='rgba(0,0,0,0.07)';
   c.beginPath(); c.ellipse(x+w/2,TY+8,w/2,4,0,0,Math.PI*2); c.fill();
   c.fillStyle='#fb923c'; rr(c,x,top,w,h,5); c.fill();
@@ -527,9 +528,33 @@ function gameLoop(ts) {
   if (!S.collided) {
     S.cart.x += S.cart.v * S.pxPerCm * dt * 80;
     if (S.cart.x + CART_W >= S.box.x) {
-      S.cart.x = S.box.x - CART_W;
-      S.boxStartX = S.box.x; S.boxDistCm = 0; S.collided = true;
-      doCollision(); onCollision();
+      S.cart.x    = S.box.x - CART_W;
+      S.boxStartX = S.box.x;
+      S.boxDistCm = 0;
+      S.collided  = true;
+
+      // Calculate target distance first
+      const targetDist = calcDistance(S.cart.m, S.vcInit, S.surface, S.windStrength);
+      S.targetDistCm   = targetDist;
+      S.vcAfter = 0; S.cart.v = 0; S.vbAfter = 0;
+
+      // Expand track if needed before onCollision
+      const boxStartCm = (S.boxStartX - 8) / S.pxPerCm;
+      const neededCm   = boxStartCm + targetDist + 80;
+      if (neededCm > S.trackCm) {
+        // Save old pxPerCm to rescale positions
+        const oldPx = S.pxPerCm;
+        S.trackCm   = Math.min(Math.ceil(neededCm / 100) * 100, TRACK_MAX);
+        const newPx = (S.W - 16) / S.trackCm;
+        // Rescale all pixel positions to new scale
+        S.cart.x    = 8 + ((S.cart.x - 8) / oldPx) * newPx;
+        S.box.x     = 8 + ((S.box.x  - 8) / oldPx) * newPx;
+        S.boxStartX = S.box.x;
+        S.pxPerCm   = newPx;
+        updateTrackDisplay();
+      }
+
+      onCollision();
     }
   } else {
     const targetPx  = S.boxStartX + S.targetDistCm * S.pxPerCm;
@@ -559,7 +584,7 @@ function onCollision() {
   spawnSparks(S.box.x+2, S.H*TY_R-18);
 
   const card = document.getElementById('results-card');
-  card.style.display = 'block';
+  card.style.display='block';
   setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'nearest'}),120);
 
   const sf = SURFACES[S.surface];
@@ -578,12 +603,11 @@ function updateLive() {
     Math.abs(S.box.v)<0.1 ? (S.collided?'stopped':'not moving') : Math.abs(S.box.v).toFixed(1);
 }
 
-// ── CONTROLS ─────────────────────────────────────────────
 function readControls() {
-  S.cart.m      = +document.getElementById('mc').value;
-  S.cart.v      = +document.getElementById('vc').value;
+  S.cart.m       = +document.getElementById('mc').value;
+  S.cart.v       = +document.getElementById('vc').value;
   S.windStrength = +document.getElementById('wind').value;
-  S.box.v       = 0;
+  S.box.v        = 0;
 }
 
 document.getElementById('btn-launch').addEventListener('click', ()=>{
@@ -608,22 +632,22 @@ canvas.addEventListener('click', ()=>{
 });
 
 document.getElementById('mc').addEventListener('input', e=>{
-  document.getElementById('mc-badge').textContent = e.target.value+' g';
-  S.cart.m = +e.target.value; if (!S.running) drawFrame();
+  document.getElementById('mc-badge').textContent=e.target.value+' g';
+  S.cart.m=+e.target.value; if (!S.running) drawFrame();
 });
 document.getElementById('vc').addEventListener('input', e=>{
-  document.getElementById('vc-badge').textContent = e.target.value;
-  S.cart.v = +e.target.value; if (!S.running) { updateLive(); drawFrame(); }
+  document.getElementById('vc-badge').textContent=e.target.value;
+  S.cart.v=+e.target.value; if (!S.running) { updateLive(); drawFrame(); }
 });
 document.getElementById('wind').addEventListener('input', e=>{
-  document.getElementById('wind-badge').textContent = e.target.value;
-  S.windStrength = +e.target.value;
+  document.getElementById('wind-badge').textContent=e.target.value;
+  S.windStrength=+e.target.value;
 });
 document.querySelectorAll('.surf-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     document.querySelectorAll('.surf-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    S.surface = btn.dataset.surface;
+    S.surface=btn.dataset.surface;
     if (!S.running) drawFrame();
   });
 });

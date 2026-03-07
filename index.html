@@ -135,7 +135,7 @@
 
   <header>
     <h1>Cart Simulation</h1>
-    <p>Explore how surface friction and wind resistance affect how far the box travels.</p>
+    <p>Simulate the collision of the cart and the box with different factors</p>
   </header>
 
   <div class="card">
@@ -192,25 +192,25 @@
         <div class="surf-swatch" style="background:linear-gradient(135deg,#e0f2fe,#bae6fd,#e0f2fe);border:1px solid #93c5fd;"></div>
         <span class="surf-name">Ice</span>
         <span class="surf-mu">Very low friction</span>
-        <span class="surf-desc">Slippery — box slides a very long way</span>
+        <span class="surf-desc">Slippery: box slides a very long way</span>
       </button>
       <button class="surf-btn" data-surface="wood">
         <div class="surf-swatch" style="background:repeating-linear-gradient(90deg,#d97706 0px,#b45309 3px,#d97706 7px);border:1px solid #92400e;"></div>
         <span class="surf-name">Wood</span>
         <span class="surf-mu">Low friction</span>
-        <span class="surf-desc">Smooth boards — some resistance</span>
+        <span class="surf-desc">Smooth boards: some resistance</span>
       </button>
       <button class="surf-btn" data-surface="concrete">
         <div class="surf-swatch" style="background:repeating-linear-gradient(45deg,#94a3b8,#94a3b8 2px,#cbd5e1 2px,#cbd5e1 8px);border:1px solid #64748b;"></div>
         <span class="surf-name">Concrete</span>
         <span class="surf-mu">Medium friction</span>
-        <span class="surf-desc">Rough pavement — noticeable drag</span>
+        <span class="surf-desc">Rough concrete: noticeable drag</span>
       </button>
       <button class="surf-btn" data-surface="carpet">
         <div class="surf-swatch" style="background:repeating-linear-gradient(0deg,#7c3aed,#7c3aed 2px,#a78bfa 2px,#a78bfa 5px);border:1px solid #6d28d9;"></div>
         <span class="surf-name">Carpet</span>
         <span class="surf-mu">High friction</span>
-        <span class="surf-desc">Thick fibers grip the box — stops quickly</span>
+        <span class="surf-desc">Thick carpet: stops quickly</span>
       </button>
     </div>
   </div>
@@ -264,7 +264,7 @@ const BOX_W  = 36, BOX_H  = 40;
 const TY_R   = 0.58;
 const K_BASE = 0.025;
 
-// Track starts at 400 cm and grows up to 3000 cm
+
 const TRACK_MIN = 400;
 const TRACK_MAX = 3000;
 
@@ -275,7 +275,7 @@ let S = {
   vcInit:10, vcAfter:null, vbAfter:null,
   boxStartX:0, boxDistCm:0, targetDistCm:0,
   surface:'ice', windStrength:0,
-  trackCm: TRACK_MIN,   // current track length — starts at 400, grows as needed
+  trackCm: TRACK_MIN,  
   W:0, H:0, pxPerCm:1
 };
 
@@ -291,24 +291,16 @@ function doCollision() {
   S.vbAfter      = 0;
   S.targetDistCm = calcDistance(S.cart.m, S.vcInit, S.surface, S.windStrength);
 
-  // Expand track NOW so the box always fits within the visible track
   const boxStartCm   = (S.boxStartX - 8) / S.pxPerCm;
-  const neededCm     = boxStartCm + S.targetDistCm + 50; // 50 cm breathing room
+  const neededCm     = boxStartCm + S.targetDistCm + 50; 
   const newTrack     = Math.min(Math.max(S.trackCm, Math.ceil(neededCm / 100) * 100), TRACK_MAX);
   if (newTrack !== S.trackCm) {
     S.trackCm  = newTrack;
-    // Recompute pxPerCm with new track length (canvas size unchanged)
     S.pxPerCm  = (S.W - 16) / S.trackCm;
-    // Reposition objects in pixel space to match new scale
-    // cart is at collision point (fixed), box is at boxStartX
-    // We need to convert current cm positions to new pixel positions
-    // cart cm position:
     const cartCm    = (S.cart.x - 8) / ((S.W - 16) / (newTrack === S.trackCm ? S.trackCm : newTrack));
-    // Easier: convert using old pxPerCm before we overwrote it — so do it before
   }
 }
 
-// ── RESIZE ────────────────────────────────────────────────
 function resize() {
   const rect = canvas.getBoundingClientRect();
   const dpr  = window.devicePixelRatio || 1;
@@ -338,7 +330,6 @@ function updateTrackDisplay() {
   document.getElementById('track-length-display').textContent = S.trackCm + ' cm';
 }
 
-// ── DRAW ──────────────────────────────────────────────────
 function drawFrame() {
   const { W, H, pxPerCm, surface, trackCm } = S;
   const TY = H * TY_R;
@@ -348,17 +339,14 @@ function drawFrame() {
 
   c.clearRect(0, 0, W, H);
 
-  // Sky
   const sky = c.createLinearGradient(0,0,0,GY);
   sky.addColorStop(0,'#dbeafe'); sky.addColorStop(1,'#f0f9ff');
   c.fillStyle = sky; c.fillRect(0,0,W,GY);
 
-  // Ground
   const grd = c.createLinearGradient(0,GY,0,H);
   grd.addColorStop(0, sf.ground1); grd.addColorStop(1, sf.ground2);
   c.fillStyle = grd; c.fillRect(0,GY,W,H-GY);
 
-  // Surface texture
   if (surface === 'carpet') {
     c.globalAlpha = 0.22;
     for (let x = 0; x < W; x += 4) {
@@ -385,11 +373,9 @@ function drawFrame() {
 
   c.fillStyle = sf.ground1; c.fillRect(0,GY,W,3);
 
-  // Rail
   c.fillStyle = sf.rail; c.fillRect(8,TY,W-16,5);
   c.fillStyle = 'rgba(255,255,255,0.25)'; c.fillRect(8,TY,W-16,2);
 
-  // Ties
   if (surface !== 'ice') {
     const tc = sf.tieColor || '#92400e';
     for (let x = 14; x < W-14; x += 26) {
@@ -398,7 +384,6 @@ function drawFrame() {
     }
   }
 
-  // Wind streaks
   if (S.running && S.collided && S.box.v > 0.3 && S.windStrength > 0) {
     const alpha = Math.min(S.windStrength/10*0.7, 0.7);
     c.globalAlpha = alpha; c.strokeStyle='#7dd3fc'; c.lineWidth=1.5;
@@ -411,7 +396,6 @@ function drawFrame() {
     c.setLineDash([]); c.globalAlpha=1;
   }
 
-  // Ruler — pick a nice interval based on track length
   const intervals = [50,100,200,500,1000];
   let interval = 50;
   for (const iv of intervals) {
@@ -518,7 +502,6 @@ function spawnSparks(x,y) {
   }
 }
 
-// ── GAME LOOP ─────────────────────────────────────────────
 function gameLoop(ts) {
   if (!S.running) return;
   if (!S.lastTime) S.lastTime = ts;
@@ -577,7 +560,6 @@ function gameLoop(ts) {
   requestAnimationFrame(gameLoop);
 }
 
-// ── COLLISION EVENT ───────────────────────────────────────
 function onCollision() {
   document.getElementById('flash-overlay').classList.add('active');
   setTimeout(()=>document.getElementById('flash-overlay').classList.remove('active'),350);

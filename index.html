@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cart Simulation</title>
+<title>Cart Collision Lab</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -37,7 +37,6 @@
   .live-chip.amber .lc-val { color:#c2410c; }
   .live-chip .lc-label { font-size:11px; font-weight:600; color:var(--text-soft); }
 
-  /* track length display */
   .track-length-row { display:flex; justify-content:flex-end; align-items:center; gap:6px; margin-top:6px; font-size:12px; color:var(--gray); }
   .track-length-val { font-weight:800; color:var(--blue-dark); }
 
@@ -134,96 +133,96 @@
 <div class="page">
 
   <header>
-    <h1>Cart Simulation</h1>
-    <p>Simulate the collision of the cart and the box with different factors</p>
+    <h1>Cart Collision Lab</h1>
+    <p>See what happens when a rolling cart hits a box — change the variables and test it out!</p>
   </header>
 
   <div class="card">
-    <div class="card-title">Track</div>
+    <div class="card-title">Track View</div>
     <canvas id="track-canvas"></canvas>
     <div class="live-row">
       <div class="live-chip blue">
         <span class="lc-val" id="live-cart">10</span>
-        <span class="lc-label">Cart speed</span>
+        <span class="lc-label">Cart speed (right now)</span>
       </div>
       <div class="live-chip amber">
         <span class="lc-val" id="live-box">not moving</span>
-        <span class="lc-label">Box speed</span>
+        <span class="lc-label">Box speed (right now)</span>
       </div>
     </div>
     <div class="track-length-row">
-      Track length: <span class="track-length-val" id="track-length-display">400 cm</span>
+      Total track length: <span class="track-length-val" id="track-length-display">400 cm</span>
     </div>
-    <p class="track-hint">Click the track to pause / resume</p>
+    <p class="track-hint">Click anywhere on the track to pause or resume</p>
   </div>
 
   <div class="card">
-    <div class="card-title">Set Up the Experiment</div>
+    <div class="card-title">Change the Variables</div>
     <div class="setup-grid">
       <div class="setup-box cart-box">
-        <h3>Rolling Cart</h3>
+        <h3>The Rolling Cart</h3>
         <div class="ctrl-row">
-          <div class="ctrl-label">Cart mass <span class="val-badge" id="mc-badge">10 g</span></div>
+          <div class="ctrl-label">Mass of cart <span class="val-badge" id="mc-badge">10 g</span></div>
           <input type="range" id="mc" min="1" max="40" step="1" value="10">
         </div>
         <div class="ctrl-row">
           <div class="ctrl-label">Starting speed <span class="val-badge" id="vc-badge">10</span></div>
           <input type="range" id="vc" min="1" max="40" step="1" value="10">
         </div>
-        <p style="font-size:12px;color:var(--text-soft);margin-top:2px">Always rolls right toward the box.</p>
+        <p style="font-size:12px;color:var(--text-soft);margin-top:2px">The cart always rolls to the right and hits the box.</p>
       </div>
       <div class="setup-box wind-box">
         <h3>Wind Resistance</h3>
         <div class="ctrl-row">
-          <div class="ctrl-label">Wind strength <span class="val-badge" id="wind-badge">0</span></div>
+          <div class="ctrl-label">Wind level <span class="val-badge" id="wind-badge">0</span></div>
           <input type="range" id="wind" min="0" max="10" step="0.5" value="0">
         </div>
         <p style="font-size:12px;color:#15803d;line-height:1.6;margin-top:4px">
-          Wind pushes <strong>against</strong> the box as it slides. Higher wind = shorter distance.
+          Wind pushes <strong>against</strong> the box after it gets hit. The stronger the wind, the shorter the distance it travels.
         </p>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title">Surface Type — affects friction</div>
+    <div class="card-title">Pick a Surface — this changes how much friction there is</div>
     <div class="surface-grid">
       <button class="surf-btn active" data-surface="ice">
         <div class="surf-swatch" style="background:linear-gradient(135deg,#e0f2fe,#bae6fd,#e0f2fe);border:1px solid #93c5fd;"></div>
         <span class="surf-name">Ice</span>
-        <span class="surf-mu">Very low friction</span>
-        <span class="surf-desc">Slippery: box slides a very long way</span>
+        <span class="surf-mu">Almost no friction</span>
+        <span class="surf-desc">Super slippery — the box goes really far</span>
       </button>
       <button class="surf-btn" data-surface="wood">
         <div class="surf-swatch" style="background:repeating-linear-gradient(90deg,#d97706 0px,#b45309 3px,#d97706 7px);border:1px solid #92400e;"></div>
         <span class="surf-name">Wood</span>
-        <span class="surf-mu">Low friction</span>
-        <span class="surf-desc">Smooth boards: some resistance</span>
+        <span class="surf-mu">A little friction</span>
+        <span class="surf-desc">Smooth floor — slows down a bit</span>
       </button>
       <button class="surf-btn" data-surface="concrete">
         <div class="surf-swatch" style="background:repeating-linear-gradient(45deg,#94a3b8,#94a3b8 2px,#cbd5e1 2px,#cbd5e1 8px);border:1px solid #64748b;"></div>
         <span class="surf-name">Concrete</span>
         <span class="surf-mu">Medium friction</span>
-        <span class="surf-desc">Rough concrete: noticeable drag</span>
+        <span class="surf-desc">Rough surface — you can feel the drag</span>
       </button>
       <button class="surf-btn" data-surface="carpet">
         <div class="surf-swatch" style="background:repeating-linear-gradient(0deg,#7c3aed,#7c3aed 2px,#a78bfa 2px,#a78bfa 5px);border:1px solid #6d28d9;"></div>
         <span class="surf-name">Carpet</span>
-        <span class="surf-mu">High friction</span>
-        <span class="surf-desc">Thick carpet: stops quickly</span>
+        <span class="surf-mu">Lots of friction</span>
+        <span class="surf-desc">Thick carpet — stops almost right away</span>
       </button>
     </div>
   </div>
 
   <div class="card">
     <div class="action-row">
-      <button class="btn-launch" id="btn-launch">Launch Cart</button>
+      <button class="btn-launch" id="btn-launch">Launch!</button>
       <button class="btn-reset"  id="btn-reset">Reset</button>
     </div>
   </div>
 
   <div class="card" id="results-card">
-    <div class="card-title">What happened in the crash?</div>
+    <div class="card-title">What happened during the collision?</div>
     <div class="results-grid">
       <div class="result-box blue-r">
         <div class="rb-label">Cart</div>
@@ -233,7 +232,7 @@
       </div>
       <div class="result-box orange-r">
         <div class="rb-label">Box</div>
-        <div class="rb-before">Before: 0 (not moving)</div>
+        <div class="rb-before">Before: 0 (sitting still)</div>
         <div class="rb-arrow">↓</div>
         <div class="rb-after" id="rb-after-box">—</div>
       </div>
@@ -241,8 +240,8 @@
     <div class="distance-highlight">
       <div class="dh-num" id="dh-dist">— cm</div>
       <div class="dh-text">
-        <div class="dh-title">Distance the box traveled</div>
-        <div class="dh-sub" id="dh-sub">Measured from where the crash happened</div>
+        <div class="dh-title">How far the box slid after being hit</div>
+        <div class="dh-sub" id="dh-sub">Measured from where they crashed into each other</div>
       </div>
     </div>
   </div>
@@ -264,7 +263,6 @@ const BOX_W  = 36, BOX_H  = 40;
 const TY_R   = 0.58;
 const K_BASE = 0.025;
 
-
 const TRACK_MIN = 400;
 const TRACK_MAX = 3000;
 
@@ -275,7 +273,7 @@ let S = {
   vcInit:10, vcAfter:null, vbAfter:null,
   boxStartX:0, boxDistCm:0, targetDistCm:0,
   surface:'ice', windStrength:0,
-  trackCm: TRACK_MIN,  
+  trackCm: TRACK_MIN,
   W:0, H:0, pxPerCm:1
 };
 
@@ -292,12 +290,11 @@ function doCollision() {
   S.targetDistCm = calcDistance(S.cart.m, S.vcInit, S.surface, S.windStrength);
 
   const boxStartCm   = (S.boxStartX - 8) / S.pxPerCm;
-  const neededCm     = boxStartCm + S.targetDistCm + 50; 
+  const neededCm     = boxStartCm + S.targetDistCm + 50;
   const newTrack     = Math.min(Math.max(S.trackCm, Math.ceil(neededCm / 100) * 100), TRACK_MAX);
   if (newTrack !== S.trackCm) {
     S.trackCm  = newTrack;
     S.pxPerCm  = (S.W - 16) / S.trackCm;
-    const cartCm    = (S.cart.x - 8) / ((S.W - 16) / (newTrack === S.trackCm ? S.trackCm : newTrack));
   }
 }
 
@@ -372,7 +369,6 @@ function drawFrame() {
   }
 
   c.fillStyle = sf.ground1; c.fillRect(0,GY,W,3);
-
   c.fillStyle = sf.rail; c.fillRect(8,TY,W-16,5);
   c.fillStyle = 'rgba(255,255,255,0.25)'; c.fillRect(8,TY,W-16,2);
 
@@ -413,7 +409,6 @@ function drawFrame() {
   c.fillStyle='rgba(255,255,255,0.85)'; c.font='10px Nunito,sans-serif';
   c.textAlign='right'; c.fillText('cm', W-4, GY+16);
 
-  // Distance measurement line
   if (S.collided && S.boxDistCm > 0.05) {
     const colPx = S.boxStartX + BOX_W/2;
     const boxPx = S.box.x    + BOX_W/2;
@@ -430,7 +425,6 @@ function drawFrame() {
     c.fillText(`${S.boxDistCm.toFixed(1)} cm`, midPx, lineY-6);
   }
 
-  // Sparks
   S.sparks.forEach(sp=>{
     c.beginPath(); c.arc(sp.x,sp.y,Math.max(0.1,sp.r*sp.life),0,Math.PI*2);
     c.fillStyle=`rgba(${sp.col},${sp.life.toFixed(2)})`; c.fill();
@@ -516,20 +510,16 @@ function gameLoop(ts) {
       S.boxDistCm = 0;
       S.collided  = true;
 
-      // Calculate target distance first
       const targetDist = calcDistance(S.cart.m, S.vcInit, S.surface, S.windStrength);
       S.targetDistCm   = targetDist;
       S.vcAfter = 0; S.cart.v = 0; S.vbAfter = 0;
 
-      // Expand track if needed before onCollision
       const boxStartCm = (S.boxStartX - 8) / S.pxPerCm;
       const neededCm   = boxStartCm + targetDist + 80;
       if (neededCm > S.trackCm) {
-        // Save old pxPerCm to rescale positions
         const oldPx = S.pxPerCm;
         S.trackCm   = Math.min(Math.ceil(neededCm / 100) * 100, TRACK_MAX);
         const newPx = (S.W - 16) / S.trackCm;
-        // Rescale all pixel positions to new scale
         S.cart.x    = 8 + ((S.cart.x - 8) / oldPx) * newPx;
         S.box.x     = 8 + ((S.box.x  - 8) / oldPx) * newPx;
         S.boxStartX = S.box.x;
@@ -571,11 +561,11 @@ function onCollision() {
 
   const sf = SURFACES[S.surface];
   document.getElementById('rb-before-cart').textContent = `Before: ${S.vcInit.toFixed(0)} (moving right)`;
-  document.getElementById('rb-after-cart').textContent  = 'stopped';
-  document.getElementById('rb-after-box').textContent   = 'moving right';
+  document.getElementById('rb-after-cart').textContent  = 'completely stopped';
+  document.getElementById('rb-after-box').textContent   = 'moving right!';
   document.getElementById('dh-dist').textContent        = '0.0 cm';
   document.getElementById('dh-sub').textContent         =
-    `${sf.label} surface${S.windStrength>0?' · Wind level '+S.windStrength:''} — from crash point`;
+    `${sf.label} surface${S.windStrength>0?' · Wind level '+S.windStrength:''} — measured from the crash point`;
 }
 
 function updateLive() {
